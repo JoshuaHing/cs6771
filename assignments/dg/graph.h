@@ -8,7 +8,7 @@ namespace gdwg {
 template<typename T>
 // requires Relation<Less<T>, T>()
 struct CompareByValue {
-  bool operator()(const std::smart_ptr<T>& lhs, const std::smart_ptr<T>& rhs) const {
+  bool operator()(const std::shared_ptr<T>& lhs, const std::shared_ptr<T>& rhs) const {
     return *lhs < *rhs;
   }
 };
@@ -17,8 +17,30 @@ template<typename N, typename E>
 class Graph {
  public:
  private:
-  std::set<std::smart_ptr<Node>, CompareByValue<Node>> nodes_;
-  std::map<std::smart_ptr<Node>, ???, CompareByValue<Node>> nodes_;
+  Class Node;
+  Class Edge;
+
+
+  std::set<std::shared__ptr<Node>, CompareByValue<Node>> nodes_;
+
+
+
+  class Node {
+   public:
+    //Set of shared pointers to edges
+    std::set<std::shared__ptr<Node>, CompareByValue<Node>>;
+   private:
+
+  };
+
+
+  class Edge {
+   public:
+
+   private:
+
+  };
+
 };
 
 // Define your graph_iterator here
