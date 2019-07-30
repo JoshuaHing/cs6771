@@ -60,4 +60,18 @@ gdwg::Graph<N, E>::Graph (typename std::vector<std::tuple<N, N, E>>::const_itera
     }
 }
 
+template <typename N, typename E>
+gdwg::Graph<N, E>::Graph (std::initializer_list<N> list) noexcept {
+    for (const auto& node_val : list) {
+        InsertNode(node_val);
+    }
+}
+
+template <typename N, typename E>
+gdwg::Graph<N, E>::Graph(const gdwg::Graph<N, E>& g) noexcept {
+    for (const auto& node : g.nodes_) {
+        this->nodes_.insert(node);
+    }
+}
+
 #endif

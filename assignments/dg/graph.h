@@ -1,6 +1,7 @@
 #ifndef ASSIGNMENTS_DG_GRAPH_H_
 #define ASSIGNMENTS_DG_GRAPH_H_
 
+#include <initializer_list>
 #include <memory>
 #include <set>
 #include <tuple>
@@ -16,6 +17,8 @@ class Graph {
     Graph(typename std::vector<N>::const_iterator begin, typename std::vector<N>::const_iterator end) noexcept;
 
     Graph(typename std::vector<std::tuple<N, N, E>>::const_iterator tup_begin, typename std::vector<std::tuple<N, N, E>>::const_iterator tup_end) noexcept;
+    Graph(std::initializer_list<N> list) noexcept;
+    Graph(const gdwg::Graph<N, E>& g) noexcept;
 
 
 
