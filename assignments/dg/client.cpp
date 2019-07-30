@@ -21,6 +21,8 @@ int main() {
 
   g.InsertEdge("are", "you?", 3);
 
+  /*
+
   std::cout << g << '\n';
 
   gdwg::Graph<std::string, int> g2{g};
@@ -33,4 +35,5 @@ int main() {
   for (const auto& [from, to, weight] : g) {
     std::cout << from << " -> " << to << " (weight " << weight << ")\n";
   }
+   */
 }

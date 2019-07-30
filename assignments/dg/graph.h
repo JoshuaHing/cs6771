@@ -2,42 +2,81 @@
 #define ASSIGNMENTS_DG_GRAPH_H_
 
 #include <memory>
+#include <set>
+#include <tuple>
+#include <vector>
 
 namespace gdwg {
-
-template<typename T>
-// requires Relation<Less<T>, T>()
-struct CompareByValue {
-  bool operator()(const std::shared_ptr<T>& lhs, const std::shared_ptr<T>& rhs) const {
-    return *lhs < *rhs;
-  }
-};
 
 template<typename N, typename E>
 class Graph {
  public:
+
+    Graph() = default;
+    Graph(typename std::vector<N>::const_iterator begin, typename std::vector<N>::const_iterator end) noexcept;
+
+    Graph(typename std::vector<std::tuple<N, N, E>>::const_iterator tup_begin, typename std::vector<std::tuple<N, N, E>>::const_iterator tup_end) noexcept;
+
+
+
+    bool InsertNode(const N& val);
+    bool InsertEdge(const N& src, const N& dst, const E& w);
+    bool IsNode(const N& val) const;
+
+    ~Graph() = default;
  private:
-  Class Node;
-  Class Edge;
 
 
-  std::set<std::shared__ptr<Node>, CompareByValue<Node>> nodes_;
+  class Node;
+  class Edge;
+
+
+  std::set<std::shared_ptr<Node>> nodes_;
 
 
 
   class Node {
    public:
-    //Set of shared pointers to edges
-    std::set<std::shared__ptr<Node>, CompareByValue<Node>>;
-   private:
 
+    Node() = default;
+    Node(N value): value_{value} {}
+
+    N GetValue() { return value_; }
+    bool AddEdge(std::shared_ptr<Node> src, std::shared_ptr<Node> dst, const E& w);
+
+    ~Node() = default;
+
+
+
+   private:
+    N value_;
+    std::set<std::shared_ptr<Edge>> edges_;
+
+    bool operator <(const Node &compare) const {
+        return value_ < compare.value;
+    }
   };
 
 
   class Edge {
    public:
 
+    Edge() = delete;
+    Edge(std::weak_ptr<Node> source, std::weak_ptr<Node> dest, E weight): source_{source}, dest_{dest}, weight_{weight} {}
+
+    E GetWeight() { return weight_; }
+    std::weak_ptr<Node> GetDest() { return dest_; }
+
+    ~Edge() = default;
+
    private:
+    std::weak_ptr<Node> source_;
+    std::weak_ptr<Node> dest_;
+    E weight_;
+
+    bool operator <(const Edge &compare) const {
+        return weight_ < compare.weight;
+    }
 
   };
 
