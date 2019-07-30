@@ -18,13 +18,21 @@ class Graph {
 
     Graph(typename std::vector<std::tuple<N, N, E>>::const_iterator tup_begin, typename std::vector<std::tuple<N, N, E>>::const_iterator tup_end) noexcept;
     Graph(std::initializer_list<N> list) noexcept;
-    Graph(const gdwg::Graph<N, E>& g) noexcept;
+
+    // move and copy constructors
+    Graph(const Graph<N, E>& g) noexcept;
+    Graph(Graph<N, E>&& g) noexcept;
+
+    Graph& operator=(const Graph& g) noexcept;
+    Graph& operator=(Graph && g) noexcept;
 
 
-
-    bool InsertNode(const N& val);
+    bool InsertNode(const N& val) noexcept;
     bool InsertEdge(const N& src, const N& dst, const E& w);
-    bool IsNode(const N& val) const;
+    bool DeleteNode(const N&) noexcept;
+    bool Replace(const N& oldData, const N& newData);
+    bool IsNode(const N& val) const noexcept ;
+
 
     ~Graph() = default;
  private:
@@ -46,6 +54,9 @@ class Graph {
 
     N GetValue() { return value_; }
     bool AddEdge(std::shared_ptr<Node> src, std::shared_ptr<Node> dst, const E& w);
+
+    std::set<std::shared_ptr<Edge>> GetEdges() { return edges_; }
+    void ClearEdges() { edges_.clear(); }
 
     ~Node() = default;
 
@@ -78,7 +89,7 @@ class Graph {
     E weight_;
 
     bool operator <(const Edge &compare) const {
-        return weight_ < compare.weight;
+        return (dest_ <= compare.GetDest() && weight_ < compare.GetWeight());
     }
 
   };

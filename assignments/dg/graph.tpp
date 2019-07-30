@@ -3,27 +3,6 @@
 
 #include <algorithm>
 
-template <typename N, typename E>
-bool gdwg::Graph<N, E>::InsertNode(const N& val) {
-    if (!IsNode(val)) {
-        nodes_.insert(std::make_shared<Node>(Node{val}));
-        return true;
-    }
-    return false;
-}
-
-template <typename N, typename E>
-bool gdwg::Graph<N, E>::InsertEdge(const N& src, const N& dst, const E& w) {
-    auto src_it = std::find_if(nodes_.begin(), nodes_.end(), [&src](std::shared_ptr<Node> n) { return (src == n->GetValue()); });
-    if (src_it == nodes_.end()) throw std::runtime_error("Cannot call Graph::InsertEdge when either src or dst node does not exist");
-
-    auto dst_it = std::find_if(nodes_.begin(), nodes_.end(), [&dst](std::shared_ptr<Node> n) { return (dst == n->GetValue()); });
-    if (dst_it == nodes_.end()) throw std::runtime_error("Cannot call Graph::InsertEdge when either src or dst node does not exist");
-
-    auto src_node_ptr = *src_it;
-    return (src_node_ptr->AddEdge(*src_it, *dst_it, w));
-
-}
 
 template <typename N, typename E>
 bool gdwg::Graph<N, E>::Node::AddEdge(std::shared_ptr<Node> src, std::shared_ptr<Node> dst, const E& w) {
@@ -34,13 +13,6 @@ bool gdwg::Graph<N, E>::Node::AddEdge(std::shared_ptr<Node> src, std::shared_ptr
     return true;
 }
 
-template <typename N, typename E>
-bool gdwg::Graph<N, E>::IsNode(const N& val) const {
-    for (const auto& node : nodes_) {
-        if (node->GetValue() == val) return true;
-    }
-    return false;
-}
 
 template <typename N, typename E>
 gdwg::Graph<N,E>::Graph (typename std::vector<N>::const_iterator begin, typename std::vector<N>::const_iterator end) noexcept {
@@ -73,5 +45,97 @@ gdwg::Graph<N, E>::Graph(const gdwg::Graph<N, E>& g) noexcept {
         this->nodes_.insert(node);
     }
 }
+
+template <typename N, typename E>
+gdwg::Graph<N, E>::Graph(gdwg::Graph<N, E>&& g) noexcept {
+    this->nodes_ = std::move(g.nodes_);
+}
+
+template <typename N, typename E>
+gdwg::Graph<N, E>& gdwg::Graph<N, E>::operator=(const gdwg::Graph<N, E>& g) noexcept {
+    this->nodes_.clear();
+    for (const auto& node : g.nodes_) {
+        this->nodes_.insert(node);
+    }
+    return *this;
+}
+
+template <typename N, typename E>
+gdwg::Graph<N, E>& gdwg::Graph<N, E>::operator=(gdwg::Graph<N, E>&& g)  noexcept {
+    this->nodes_.clear();
+    this->nodes_ = std::move(g.nodes_);
+    return *this;
+}
+
+template <typename N, typename E>
+bool gdwg::Graph<N, E>::InsertNode(const N& val) noexcept {
+    if (!IsNode(val)) {
+        nodes_.insert(std::make_shared<Node>(Node{val}));
+        return true;
+    }
+    return false;
+}
+
+template <typename N, typename E>
+bool gdwg::Graph<N, E>::InsertEdge(const N& src, const N& dst, const E& w) {
+    auto src_it = std::find_if(nodes_.begin(), nodes_.end(), [&src](std::shared_ptr<Node> n) { return (src == n->GetValue()); });
+    if (src_it == nodes_.end()) throw std::runtime_error("Cannot call Graph::InsertEdge when either src or dst node does not exist");
+
+    auto dst_it = std::find_if(nodes_.begin(), nodes_.end(), [&dst](std::shared_ptr<Node> n) { return (dst == n->GetValue()); });
+    if (dst_it == nodes_.end()) throw std::runtime_error("Cannot call Graph::InsertEdge when either src or dst node does not exist");
+
+    auto src_node_ptr = *src_it;
+    return (src_node_ptr->AddEdge(*src_it, *dst_it, w));
+
+}
+
+template <typename N, typename E>
+bool gdwg::Graph<N, E>::DeleteNode(const N& val) noexcept {
+    for (const auto& node : nodes_) {
+        if (node->GetValue() == val) {
+            std::cout <<  "Erasing node...\n";
+            nodes_.erase(node);
+            return true;
+        }
+
+    }
+    return false;
+}
+
+template <typename N, typename E>
+bool gdwg::Graph<N, E>::Replace(const N& oldData, const N& newData) {
+    if (!IsNode(oldData)) {
+        throw std::runtime_error("Cannot call Graph::Replace on a node that doesn't exist");
+    }
+    if (IsNode(newData)) {
+        return false;
+    }
+
+    Node new_node = Node{newData};
+
+    for (const auto& node : nodes_) {
+        if (node->GetValue() == oldData) {
+            for (const auto& edge_ptr : node->GetEdges()) {
+                new_node.AddEdge(std::make_shared<Node>(new_node), edge_ptr->GetDest().lock(), edge_ptr->GetWeight());
+            }
+            node->ClearEdges();
+            nodes_.erase(node);
+            nodes_.insert(new_node);
+        }
+    }
+
+    return true;
+}
+
+template <typename N, typename E>
+bool gdwg::Graph<N, E>::IsNode(const N& val) const noexcept {
+    for (const auto& node : nodes_) {
+        if (node->GetValue() == val) {
+            return true;
+        }
+    }
+    return false;
+}
+
 
 #endif

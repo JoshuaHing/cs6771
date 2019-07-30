@@ -21,11 +21,8 @@ int main() {
 
   g.InsertEdge("are", "you?", 3);
 
-
-  gdwg::Graph<char, std::string> b{'a', 'b', 'x', 'y', 'a'};
-
-  gdwg::Graph<char, std::string> c{b};
-  /*
+  g.Replace("hello", "hi");
+/*
 
   std::cout << g << '\n';
 
