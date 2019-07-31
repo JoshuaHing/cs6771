@@ -2,6 +2,7 @@
 #define ASSIGNMENTS_DG_GRAPH_H_
 
 #include <initializer_list>
+#include <map>
 #include <memory>
 #include <set>
 #include <tuple>
@@ -33,6 +34,17 @@ class Graph {
     bool Replace(const N& oldData, const N& newData);
     bool IsNode(const N& val) const noexcept ;
 
+    void PrintGraph() {
+        std::cout << "printing graph...\n";
+        for (const auto& node : nodes_) {
+            for (const std::map<N, std::set<std::shared_ptr<Edge>>>& edge : node->GetEdges()) {
+                for (const auto& e: edge) {
+                    std::cout << e << "\n";
+                }
+            }
+        }
+    }
+
 
     ~Graph() = default;
  private:
@@ -53,18 +65,20 @@ class Graph {
     Node(N value): value_{value} {}
 
     N GetValue() { return value_; }
+
     bool AddEdge(std::shared_ptr<Node> src, std::shared_ptr<Node> dst, const E& w);
 
-    std::set<std::shared_ptr<Edge>> GetEdges() { return edges_; }
+    std::map<N, std::set<std::shared_ptr<Edge>>> GetEdges() { return edges_; }
     void ClearEdges() { edges_.clear(); }
 
     ~Node() = default;
 
 
-
    private:
     N value_;
-    std::set<std::shared_ptr<Edge>> edges_;
+    //std::set<std::shared_ptr<Edge>> edges_;
+    std::map<N, std::set<std::shared_ptr<Edge>>> edges_;
+
 
     bool operator <(const Node &compare) const {
         return value_ < compare.value;

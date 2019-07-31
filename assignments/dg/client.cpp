@@ -7,21 +7,23 @@
 
 int main() {
   gdwg::Graph<std::string, int> g;
-  g.InsertNode("hello");
-  g.InsertNode("how");
-  g.InsertNode("are");
-  g.InsertNode("you?");
+  g.InsertNode("a");
+  g.InsertNode("b");
+  g.InsertNode("c");
+  g.InsertNode("d");
 
-  g.InsertEdge("hello", "how", 5);
-  g.InsertEdge("hello", "are", 8);
-  g.InsertEdge("hello", "are", 2);
+  g.InsertEdge("a", "b", 5);
+  g.InsertEdge("a", "c", 8);
+  g.InsertEdge("a", "c", 2);
 
-  g.InsertEdge("how", "you?", 1);
-  g.InsertEdge("how", "hello", 4);
+  g.InsertEdge("b", "d", 1);
+  g.InsertEdge("b", "a", 4);
 
-  g.InsertEdge("are", "you?", 3);
+  g.InsertEdge("c", "d", 3);
 
-  g.Replace("hello", "hi");
+  //g.Replace("a", "e");
+
+  g.PrintGraph();
 /*
 
   std::cout << g << '\n';

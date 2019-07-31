@@ -1,8 +1,11 @@
 #include <tuple>
 #include <iostream>
+#include <map>
 
 int main() {
-	std::tuple<std::string, std::string> tup = std::make_tuple("one", "two");
-	std::string &num1 = std::get<0>(tup);	
-	std::cout << "num = " << *num1 <<  "\n";
+	std::map<char, int> s;
+	s.insert({'a',1});
+    s.insert({'a',1});
+    s.insert({'a',2});
+    std::cout << "size = " << s.size();
 }

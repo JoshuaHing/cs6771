@@ -4,15 +4,6 @@
 #include <algorithm>
 
 
-template <typename N, typename E>
-bool gdwg::Graph<N, E>::Node::AddEdge(std::shared_ptr<Node> src, std::shared_ptr<Node> dst, const E& w) {
-    Node src_node = *src;
-    auto it = std::find_if(src_node.edges_.begin(), src_node.edges_.end(), [&dst, &w](std::shared_ptr<Edge> e) { return (dst == e->GetDest().lock() && w == e->GetWeight()) ;});
-    if (!(it == src_node.edges_.end())) return false;
-    src_node.edges_.insert(std::make_shared<Edge>(Edge{src, dst, w}));
-    return true;
-}
-
 
 template <typename N, typename E>
 gdwg::Graph<N,E>::Graph (typename std::vector<N>::const_iterator begin, typename std::vector<N>::const_iterator end) noexcept {
@@ -90,6 +81,15 @@ bool gdwg::Graph<N, E>::InsertEdge(const N& src, const N& dst, const E& w) {
 }
 
 template <typename N, typename E>
+bool gdwg::Graph<N, E>::Node::AddEdge(std::shared_ptr<Node> src, std::shared_ptr<Node> dst, const E& w) {
+    auto it = std::find_if(src->edges_[src->GetValue()].begin(), src->edges_[src->GetValue()].end(), [&dst, &w](std::shared_ptr<Edge> e) { return (dst == e->GetDest().lock() && w == e->GetWeight()) ;});
+    if (!(it == src->edges_[src->GetValue()].end())) return false;
+    //src->edges_.insert({src->GetValue(), std::make_shared<Edge>(Edge{src, dst, w})});
+    src->edges_[src->GetValue()].insert(std::make_shared<Edge>(Edge{src, dst, w}));
+    return true;
+}
+
+template <typename N, typename E>
 bool gdwg::Graph<N, E>::DeleteNode(const N& val) noexcept {
     for (const auto& node : nodes_) {
         if (node->GetValue() == val) {
@@ -120,7 +120,7 @@ bool gdwg::Graph<N, E>::Replace(const N& oldData, const N& newData) {
             }
             node->ClearEdges();
             nodes_.erase(node);
-            nodes_.insert(new_node);
+            nodes_.insert(std::make_shared<Node>(new_node));
         }
     }
 
