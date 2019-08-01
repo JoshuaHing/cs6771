@@ -21,14 +21,16 @@ struct CompareByValue {
     static_cast<void>(rhs);
     return true;
     */
-   if ((*(lhs->GetDest().lock())).GetValue() < (*(rhs->GetDest().lock())).GetValue()) {
-       std::cout << "val = " << (*(lhs->GetDest().lock())).GetValue() << "\n";
+   if (((*(lhs->GetDest().lock())).GetValue() < (*(rhs->GetDest().lock())).GetValue())) {
        return true;
    }
-    if (lhs->GetValue() < rhs->GetValue()) {
-       return true;
-   } 
-   return false;
+
+  if (((*(lhs->GetDest().lock())).GetValue() <= (*(rhs->GetDest().lock())).GetValue())&& lhs->GetValue() < rhs->GetValue()) {
+      return true;
+  }
+  return false;
+
+
    
   }
 };
@@ -64,11 +66,12 @@ class Graph {
         
         for (const auto& node : nodes_) {
             //set of shared pointers
-            for (const auto &ptr_map : node->GetEdges()) { 
+            for (const auto &ptr_map : node->GetEdges()) {
                 for (const auto &ptr_set : ptr_map.second) {
-                    std::cout << node->GetValue() << " - " << ptr_set->GetValue() << " - " << ptr_set->GetDest().lock()->GetValue() << "\n";
-
+                    std::cout << node->GetValue() << " - " << ptr_set->GetValue() << " - "
+                              << ptr_set->GetDest().lock()->GetValue() << "\n";
                 }
+
             }
         }
         
@@ -108,7 +111,7 @@ class Graph {
    private:
     N value_;
     //std::set<std::shared_ptr<Edge>> edges_;
-    std::map<N, std::set<std::shared_ptr<Edge>, CompareByValue<Edge>> > edges_;
+    std::map<N, std::set<std::shared_ptr<Edge>, CompareByValue<Edge>>> edges_;
 
 
     
@@ -126,6 +129,8 @@ class Graph {
     Edge(std::weak_ptr<Node> source, std::weak_ptr<Node> dest, E weight): source_{source}, dest_{dest}, weight_{weight} {}
 
     E GetValue() { return weight_; }
+    void SetSource(std::shared_ptr<Node> new_source) { source_ = new_source; }
+    void SetDest(std::shared_ptr<Node> new_dest) { dest_ = new_dest; }
     std::weak_ptr<Node> GetDest() { return dest_; }
 
     ~Edge() = default;

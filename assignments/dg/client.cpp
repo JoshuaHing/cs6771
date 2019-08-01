@@ -21,7 +21,7 @@ int main() {
 
   g.InsertEdge("c", "d", 3);
 
-  //g.Replace("a", "e");
+  g.Replace("a", "e");
 
   g.PrintGraph();
 /*

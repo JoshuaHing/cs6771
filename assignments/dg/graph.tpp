@@ -114,16 +114,36 @@ bool gdwg::Graph<N, E>::Replace(const N& oldData, const N& newData) {
     Node new_node = Node{newData};
 
     for (const auto& node : nodes_) {
-        if (node->GetValue() == oldData) {
-            for (const auto& edge_ptr : node->GetEdges()) {
-                new_node.AddEdge(std::make_shared<Node>(new_node), edge_ptr->GetDest().lock(), edge_ptr->GetWeight());
-            }
-            node->ClearEdges();
-            nodes_.erase(node);
-            nodes_.insert(std::make_shared<Node>(new_node));
-        }
-    }
 
+        if (node->GetEdges().count(oldData) == 1) {
+            std::cout << "hello\n";
+            if (node->GetValue() == oldData) {
+
+                // Copy over old node data to the new node
+                for (const auto& map_ptr : node->GetEdges()) {
+                    for (const auto& edge_ptr : map_ptr.second) {
+                        //static_cast<void>(map_ptr);
+                        //static_cast<void>(edge_ptr);
+                        //edge_ptr->SetSource(std::make_shared<Node>(new_node));
+                        new_node.AddEdge(std::make_shared<Node>(new_node), edge_ptr->GetDest().lock(), edge_ptr->GetValue());
+                    }
+                }
+
+                // Clear old node data
+                //node->ClearEdges();
+                //nodes_.erase(node);
+            }
+        } else {
+            /*
+            for (const auto& edge_ptr : (node->GetEdges())[oldData]) {
+                edge_ptr->SetDest(std::make_shared<Node>(*node));
+            }
+             */
+        }
+
+    }
+    std::cout << "size = " << nodes_.size() << "\n";
+    nodes_.insert(std::make_shared<Node>(new_node));
     return true;
 }
 
