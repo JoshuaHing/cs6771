@@ -7,8 +7,32 @@
 #include <set>
 #include <tuple>
 #include <vector>
+#include <typeinfo>
 
 namespace gdwg {
+
+template<typename T>
+// requires Relation<Less<T>, T>()
+struct CompareByValue {
+  bool operator()(const std::shared_ptr<T>& lhs, const std::shared_ptr<T>& rhs) const {
+    //return *lhs < *rhs;
+    /*
+    static_cast<void>(lhs);
+    static_cast<void>(rhs);
+    return true;
+    */
+   if ((*(lhs->GetDest().lock())).GetValue() < (*(rhs->GetDest().lock())).GetValue()) {
+       std::cout << "val = " << (*(lhs->GetDest().lock())).GetValue() << "\n";
+       return true;
+   }
+    if (lhs->GetValue() < rhs->GetValue()) {
+       return true;
+   } 
+   return false;
+   
+  }
+};
+
 
 template<typename N, typename E>
 class Graph {
@@ -30,20 +54,27 @@ class Graph {
 
     bool InsertNode(const N& val) noexcept;
     bool InsertEdge(const N& src, const N& dst, const E& w);
-    bool DeleteNode(const N&) noexcept;
+    bool DeleteNode(const N&) noexcept; 
     bool Replace(const N& oldData, const N& newData);
     bool IsNode(const N& val) const noexcept ;
 
     void PrintGraph() {
         std::cout << "printing graph...\n";
+        
+        
         for (const auto& node : nodes_) {
-            for (const std::map<N, std::set<std::shared_ptr<Edge>>>& edge : node->GetEdges()) {
-                for (const auto& e: edge) {
-                    std::cout << e << "\n";
+            //set of shared pointers
+            for (const auto &ptr_map : node->GetEdges()) { 
+                for (const auto &ptr_set : ptr_map.second) {
+                    std::cout << node->GetValue() << " - " << ptr_set->GetValue() << " - " << ptr_set->GetDest().lock()->GetValue() << "\n";
+
                 }
             }
         }
+        
+        
     }
+
 
 
     ~Graph() = default;
@@ -68,7 +99,7 @@ class Graph {
 
     bool AddEdge(std::shared_ptr<Node> src, std::shared_ptr<Node> dst, const E& w);
 
-    std::map<N, std::set<std::shared_ptr<Edge>>> GetEdges() { return edges_; }
+    std::map<N, std::set<std::shared_ptr<Edge>, CompareByValue<Edge>>> GetEdges() { return edges_; }
     void ClearEdges() { edges_.clear(); }
 
     ~Node() = default;
@@ -77,12 +108,14 @@ class Graph {
    private:
     N value_;
     //std::set<std::shared_ptr<Edge>> edges_;
-    std::map<N, std::set<std::shared_ptr<Edge>>> edges_;
+    std::map<N, std::set<std::shared_ptr<Edge>, CompareByValue<Edge>> > edges_;
 
 
+    
     bool operator <(const Node &compare) const {
         return value_ < compare.value;
     }
+    
   };
 
 
@@ -92,7 +125,7 @@ class Graph {
     Edge() = delete;
     Edge(std::weak_ptr<Node> source, std::weak_ptr<Node> dest, E weight): source_{source}, dest_{dest}, weight_{weight} {}
 
-    E GetWeight() { return weight_; }
+    E GetValue() { return weight_; }
     std::weak_ptr<Node> GetDest() { return dest_; }
 
     ~Edge() = default;
@@ -102,9 +135,13 @@ class Graph {
     std::weak_ptr<Node> dest_;
     E weight_;
 
+    /*
     bool operator <(const Edge &compare) const {
-        return (dest_ <= compare.GetDest() && weight_ < compare.GetWeight());
+        std::cout << "called\n";
+        return (compare.GetDest() <= dest_ && compare.GetWeight() < weight_);
     }
+    */
+    
 
   };
 

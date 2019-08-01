@@ -82,7 +82,7 @@ bool gdwg::Graph<N, E>::InsertEdge(const N& src, const N& dst, const E& w) {
 
 template <typename N, typename E>
 bool gdwg::Graph<N, E>::Node::AddEdge(std::shared_ptr<Node> src, std::shared_ptr<Node> dst, const E& w) {
-    auto it = std::find_if(src->edges_[src->GetValue()].begin(), src->edges_[src->GetValue()].end(), [&dst, &w](std::shared_ptr<Edge> e) { return (dst == e->GetDest().lock() && w == e->GetWeight()) ;});
+    auto it = std::find_if(src->edges_[src->GetValue()].begin(), src->edges_[src->GetValue()].end(), [&dst, &w](std::shared_ptr<Edge> e) { return (dst == e->GetDest().lock() && w == e->GetValue()) ;});
     if (!(it == src->edges_[src->GetValue()].end())) return false;
     //src->edges_.insert({src->GetValue(), std::make_shared<Edge>(Edge{src, dst, w})});
     src->edges_[src->GetValue()].insert(std::make_shared<Edge>(Edge{src, dst, w}));
