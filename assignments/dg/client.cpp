@@ -12,16 +12,42 @@ int main() {
   g.InsertNode("c");
   g.InsertNode("d");
 
-  g.InsertEdge("a", "b", 5);
-  g.InsertEdge("a", "c", 8);
-  g.InsertEdge("a", "c", 2);
+    g.InsertEdge("a", "b", 5);
+    g.InsertEdge("a", "b", 6);
+    g.InsertEdge("a", "b", 4);
+    g.InsertEdge("a", "c", 8);
+    g.InsertEdge("a", "c", 2);
+
+
 
   g.InsertEdge("b", "d", 1);
   g.InsertEdge("b", "a", 4);
 
   g.InsertEdge("c", "d", 3);
 
-  g.Replace("a", "e");
+    //g.Replace("a", "e");
+    /*
+    g.InsertEdge("a", "b", 1);
+    g.InsertEdge("a", "c", 2);
+    g.InsertEdge("a", "d", 3);
+    g.InsertEdge("b", "b", 1);
+     */
+
+
+    /*
+    g.InsertEdge("b", "a", 3);
+    g.InsertEdge("b", "c", 2);
+    g.InsertEdge("b", "d", 4);
+     */
+
+    auto vec = g.GetWeights("a", "b");
+    for (const auto& item : vec) {
+        std::cout << item << "\n";
+
+    }
+
+
+  //std::cout << g.IsConnected("a", "d") << "\n";
 
   g.PrintGraph();
 /*

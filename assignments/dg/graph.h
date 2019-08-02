@@ -58,7 +58,18 @@ class Graph {
     bool InsertEdge(const N& src, const N& dst, const E& w);
     bool DeleteNode(const N&) noexcept; 
     bool Replace(const N& oldData, const N& newData);
+    void MergeReplace(const N& oldData, const N& newData);
+
     bool IsNode(const N& val) const noexcept ;
+    bool IsConnected(const N& src, const N& dst) const;
+
+
+    std::vector<N> GetNodes() const noexcept;
+    std::vector<N> GetConnected(const N& src) const;
+    std::vector<E> GetWeights(const N& src, const N& dst) const;
+
+    bool erase(const N& src, const N& dst, const E& w) noexcept;
+
 
     void PrintGraph() {
         std::cout << "printing graph...\n";
@@ -66,11 +77,11 @@ class Graph {
         
         for (const auto& node : nodes_) {
             //set of shared pointers
-            for (const auto &ptr_map : node->GetEdges()) {
-                for (const auto &ptr_set : ptr_map.second) {
-                    std::cout << node->GetValue() << " - " << ptr_set->GetValue() << " - "
+            for (const auto &ptr_set : node.second->GetEdges()) {
+                //for (const auto &ptr_set : ptr_map.second) {
+                    std::cout << ptr_set->GetSource().lock()->GetValue() << " - " << ptr_set->GetValue() << " - "
                               << ptr_set->GetDest().lock()->GetValue() << "\n";
-                }
+                //}
 
             }
         }
@@ -88,7 +99,7 @@ class Graph {
   class Edge;
 
 
-  std::set<std::shared_ptr<Node>> nodes_;
+  std::map<N, std::shared_ptr<Node>> nodes_;
 
 
 
@@ -98,20 +109,31 @@ class Graph {
     Node() = default;
     Node(N value): value_{value} {}
 
-    N GetValue() { return value_; }
+    N GetValue() const { return value_; }
+    void SetValue(const N& val) { value_ = val; }
 
     bool AddEdge(std::shared_ptr<Node> src, std::shared_ptr<Node> dst, const E& w);
 
-    std::map<N, std::set<std::shared_ptr<Edge>, CompareByValue<Edge>>> GetEdges() { return edges_; }
+    std::set<std::shared_ptr<Edge>, CompareByValue<Edge>> GetEdges() { return edges_; }
+
+
     void ClearEdges() { edges_.clear(); }
+    void SetEdges(std::set<std::shared_ptr<Edge>, CompareByValue<Edge>> e) { edges_ = e; }
+    void AddEdges(std::set<std::shared_ptr<Edge>, CompareByValue<Edge>> e) {
+        for (const auto& edge : e) {
+            edges_.insert(edge);
+        }
+    }
 
     ~Node() = default;
+
 
 
    private:
     N value_;
     //std::set<std::shared_ptr<Edge>> edges_;
-    std::map<N, std::set<std::shared_ptr<Edge>, CompareByValue<Edge>>> edges_;
+    std::set<std::shared_ptr<Edge>, CompareByValue<Edge>> edges_;
+
 
 
     
@@ -128,9 +150,10 @@ class Graph {
     Edge() = delete;
     Edge(std::weak_ptr<Node> source, std::weak_ptr<Node> dest, E weight): source_{source}, dest_{dest}, weight_{weight} {}
 
-    E GetValue() { return weight_; }
-    void SetSource(std::shared_ptr<Node> new_source) { source_ = new_source; }
-    void SetDest(std::shared_ptr<Node> new_dest) { dest_ = new_dest; }
+    E GetValue() const { return weight_; }
+    void SetSource(std::weak_ptr<Node> new_source) { source_ = new_source; }
+    void SetDest(std::weak_ptr<Node> new_dest) { dest_ = new_dest; }
+    std::weak_ptr<Node> GetSource() { return source_; }
     std::weak_ptr<Node> GetDest() { return dest_; }
 
     ~Edge() = default;
