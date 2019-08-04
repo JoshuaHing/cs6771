@@ -217,6 +217,13 @@ std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) const {
 
 }
 
+/*
+template <typename N, typename E>
+const_iterator gdwg::Graph<N, E>::find(const N&, const N&, const E&) const noexcept {
+    //return a const iterator
+}
+ */
+
 template <typename N, typename E>
 bool gdwg::Graph<N, E>::erase(const N& src, const N& dst, const E& w) noexcept {
     if (!IsNode(src)) {

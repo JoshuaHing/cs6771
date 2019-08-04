@@ -67,6 +67,7 @@ class Graph {
     std::vector<N> GetNodes() const noexcept;
     std::vector<N> GetConnected(const N& src) const;
     std::vector<E> GetWeights(const N& src, const N& dst) const;
+    //const_iterator find(const N&, const N&, const E&);
 
     bool erase(const N& src, const N& dst, const E& w) noexcept;
 
@@ -169,14 +170,29 @@ class Graph {
         return (compare.GetDest() <= dest_ && compare.GetWeight() < weight_);
     }
     */
-    
 
+  };
+
+  class const_iterator {
+   public:
+    using iterator_category = std::bidirectional_iterator_tag;
+    using value_type = char;
+    using reference = char&;
+    using pointer = char*;
+    using difference_type = int;
+
+   private:
+    std::map<N, std::shared_ptr<Node>>::iterator node_it_;
+
+    //other_node_container_for_node::iterator node2_it_;
+    std::set<std::shared_ptr<Edge>, CompareByValue<Edge>>::iterator edge_it_;
   };
 
 };
 
 // Define your graph_iterator here
 // Define your graph_const_iterator here
+
 
 }
 
