@@ -67,37 +67,40 @@ class Graph {
     std::vector<N> GetNodes() const noexcept;
     std::vector<N> GetConnected(const N& src) const;
     std::vector<E> GetWeights(const N& src, const N& dst) const;
-    //const_iterator find(const N&, const N&, const E&);
+    const_iterator find(const N&, const N&, const E&);
 
     bool erase(const N& src, const N& dst, const E& w) noexcept;
 
 
     void PrintGraph() {
         std::cout << "printing graph...\n";
-        
-        
+
+
         for (const auto& node : nodes_) {
             //set of shared pointers
-            for (const auto &ptr_set : node.second->GetEdges()) {
+            for (const auto& ptr_set : node.second->GetEdges()) {
                 //for (const auto &ptr_set : ptr_map.second) {
-                    std::cout << ptr_set->GetSource().lock()->GetValue() << " - " << ptr_set->GetValue() << " - "
-                              << ptr_set->GetDest().lock()->GetValue() << "\n";
+                std::cout << ptr_set->GetSource().lock()->GetValue() << " - " << ptr_set->GetValue()
+                          << " - "
+                          << ptr_set->GetDest().lock()->GetValue() << "\n";
                 //}
 
             }
         }
-        
-        
+
     }
 
 
-
     ~Graph() = default;
+
+    const_iterator begin();
+    const_iterator end();
  private:
 
 
   class Node;
   class Edge;
+  class const_iterator;
 
 
   std::map<N, std::shared_ptr<Node>> nodes_;
@@ -132,12 +135,8 @@ class Graph {
 
    private:
     N value_;
-    //std::set<std::shared_ptr<Edge>> edges_;
     std::set<std::shared_ptr<Edge>, CompareByValue<Edge>> edges_;
 
-
-
-    
     bool operator <(const Node &compare) const {
         return value_ < compare.value;
     }
@@ -176,16 +175,31 @@ class Graph {
   class const_iterator {
    public:
     using iterator_category = std::bidirectional_iterator_tag;
-    using value_type = char;
-    using reference = char&;
-    using pointer = char*;
-    using difference_type = int;
+    using value_type = std::tuple<N, N, E>;
+    using reference = std::tuple<const N&, const N&, const E&>;
+    using pointer = std::tuple<const N*, const N*, const E*>;
+    using difference_type = std::ptrdiff_t;
+
+    reference operator*() const;
+    /*
+    const_iterator& operator++();
+    const_iterator operator++(int) {
+        auto copy{*this};
+        ++(*this);
+        return copy;
+    }
+     */
 
    private:
-    std::map<N, std::shared_ptr<Node>>::iterator node_it_;
+    typename std::map<N, std::shared_ptr<Node>>::iterator node_it_;
 
-    //other_node_container_for_node::iterator node2_it_;
-    std::set<std::shared_ptr<Edge>, CompareByValue<Edge>>::iterator edge_it_;
+    const typename std::map<N, std::shared_ptr<Node>>::iterator sentinel_;
+    typename std::set<std::shared_ptr<Edge>, CompareByValue<Edge>>::iterator edge_it_;
+
+    friend class Graph;
+
+    const_iterator(const decltype(node_it_)& outer, const decltype(sentinel_)& sentinel, const decltype(edge_it_)& inner): node_it_{outer}, sentinel_{sentinel}, edge_it_{inner} {}
+
   };
 
 };
