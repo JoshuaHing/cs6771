@@ -25,6 +25,10 @@ int main() {
 
   g.InsertEdge("c", "d", 3);
 
+  auto it = g.begin();
+    //static_cast<void>(it);
+  std::cout << std::get<0>(*it) << "\n";
+
 
     //g.Replace("a", "e");
     /*

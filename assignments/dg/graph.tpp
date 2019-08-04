@@ -218,11 +218,13 @@ std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) const {
 }
 
 
+/*
 template <typename N, typename E>
 const_iterator gdwg::Graph<N, E>::find(const N&, const N&, const E&) const noexcept {
     //return a const iterator to found edge
 
 }
+ */
 
 
 template <typename N, typename E>
@@ -241,9 +243,24 @@ bool gdwg::Graph<N, E>::erase(const N& src, const N& dst, const E& w) noexcept {
     return false;
 }
 
+
 template <typename N, typename E>
-gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::begin() {
-    return const_iterator{nodes_.begin(), nodes_.end(), nodes_.GetEdges().end()};
+typename gdwg::Graph<N, E>::const_iterator::reference gdwg::Graph<N, E>::const_iterator::operator*() const  {
+    std::cout << "called\n";
+    const N& a = (*edge_it_)->GetSource().lock()->GetValue();
+    const N& b = (*edge_it_)->GetDest().lock()->GetValue();
+    const E& c = (*edge_it_)->GetValue();
+    std::cout << "a = " << a << "\n";
+    return {a, b, c};
+}
+
+
+
+
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::begin() {
+    std::cout << "called 2\n";
+    return const_iterator{nodes_.begin(), nodes_.end(), nodes_[0]->GetEdges().end()};
 }
 
 #endif
