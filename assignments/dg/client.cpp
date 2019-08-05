@@ -28,6 +28,7 @@ int main() {
   //g.Replace("a", "e");
   //g.MergeReplace("a", "b");
 
+
   /*
    * b - 5 - b
    * b - 6 - b
@@ -40,10 +41,19 @@ int main() {
 
 
 
+
     auto it = g.find("b", "d", 1);
-    std::cout << "value = " << std::get<0>(*it) << "\n";
-    std::cout << "value = " << std::get<1>(*it) << "\n";
-    std::cout << "value = " << std::get<2>(*it) << "\n";
+    if (it == g.end()) {
+        std::cout << "failure...\n";
+
+    } else {
+        std::cout << "value = " << std::get<0>(*it) << "\n";
+        std::cout << "value = " << std::get<1>(*it) << "\n";
+        std::cout << "value = " << std::get<2>(*it) << "\n";
+    }
+
+    //auto it = g.end();
+    //static_cast<void>(it);
 
   /*
     for (int i = 0; i < 8; ++i) {

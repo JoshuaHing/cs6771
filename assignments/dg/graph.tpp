@@ -230,19 +230,17 @@ std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) const {
 
 }
 
-/*
+
+
 template <typename N, typename E>
-typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::find(const N& src, const N& dst, const E& w) const noexcept {
-    std::tuple<N, N, E> to_find = {src, dst, w};
-    for (const auto& it = begin(); it != end(); ++it) {
-        if (to_find == *it) {
-            return *it;
-        }
-    }
-    //return this->end();
+typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::find(const N& src, const N& dst, const E& w) noexcept {
+
+
+ return std::find_if(this->begin(), this->end(), [&src, &dst, &w] (std::tuple<const N&, const N&, const E&> curr) { return (src == std::get<0>(curr) && dst == std::get<1>(curr) && w == std::get<2>(curr)); });
 
 }
-*/
+
+
 
 
 
@@ -301,20 +299,29 @@ typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::o
     return *this;
 }
 
+
 template <typename N, typename E>
-typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::begin() {
+typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cbegin() {
     return const_iterator{nodes_.begin(), nodes_.end(), nodes_.begin()->second->GetEdges().begin()};
 }
 
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cend() {
+    return const_iterator{nodes_.end(), nodes_.end(), {}};
+}
+
+
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::begin() {
-    return const_iterator{nodes_.begin(), nodes_.end(), nodes_.begin()->second->GetEdges().begin()};
+    return cbegin();
 }
+
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::end() {
-    return const_iterator{nodes_.end(), nodes_.end(), {}};
+    return cend();
 }
+
 
 #endif

@@ -158,7 +158,9 @@ class Graph {
 
 
     friend class Graph;
+
     const_iterator(const decltype(node_it_)& node_it, const decltype(sentinel_)& sentinel, const decltype(edge_it_)& edge_it): node_it_{node_it}, sentinel_{sentinel}, edge_it_{edge_it} {}
+
 
   };
 
@@ -190,14 +192,20 @@ class Graph {
     std::vector<N> GetNodes() const noexcept;
     std::vector<N> GetConnected(const N& src) const;
     std::vector<E> GetWeights(const N& src, const N& dst) const;
-    const_iterator find(const N& src, const N& dst, const E& val) const noexcept;
+    const_iterator find(const N& src, const N& dst, const E& val) noexcept;
 
     bool erase(const N& src, const N& dst, const E& w) noexcept;
 
+    /*
   const_iterator cbegin() const noexcept;
   const_iterator cend() const noexcept;
-  const_iterator begin() const noexcept;
-  const_iterator end() const noexcept;
+     */
+
+  const_iterator cbegin();
+  const_iterator cend();
+  const_iterator begin();
+  const_iterator end();
+
 
     void PrintGraph() {
         std::cout << "printing graph...\n";
