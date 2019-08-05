@@ -1,6 +1,7 @@
 #include <iostream>
 #include <set>
 #include <string>
+#include <vector>
 
 
 class Hello {
@@ -35,36 +36,10 @@ struct CompareByValue {
  */
 
 int main() {
-	Hello a;
-	a.i = 2;
-	Hello b;
-	b.i = 3;
-    Hello c;
-    c.i = -1;
-    Hello d;
-    d.i = 10;
-    Hello e;
-    e.i = 7;
-    Hello f;
-    f.i = 1;
-    Hello g;
-    g.i = 20;
-	//std::cout << hi.i << by.i << "\n";
-	std::set<Hello> yo;
-	yo.insert(a);
-	yo.insert(b);
-	yo.insert(c);
-	yo.insert(d);
-	yo.insert(e);
-	yo.insert(f);
-	yo.insert(g);
-
-    for (const auto& hi : yo) {
-        std::cout << hi.i << "\n";
-    }
-
-
-
+    std::vector<int> v{1,2,3,4,5};
+    auto it = v.end();
+    it--;
+    std::cout << *it << "\n";
 
 
 }

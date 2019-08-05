@@ -58,7 +58,7 @@ class Graph {
     Node() = default;
     Node(N value): value_{value} {}
 
-    N GetValue() const { return value_; }
+    N& GetValue() { return value_; }
     void SetValue(const N& val) { value_ = val; }
 
     bool AddEdge(std::shared_ptr<Node> src, std::shared_ptr<Node> dst, const E& w);
@@ -95,7 +95,7 @@ class Graph {
     Edge() = delete;
     Edge(std::weak_ptr<Node> source, std::weak_ptr<Node> dest, E weight): source_{source}, dest_{dest}, weight_{weight} {}
 
-    E GetValue() const { return weight_; }
+    E& GetValue() { return weight_; }
     void SetSource(std::weak_ptr<Node> new_source) { source_ = new_source; }
     void SetDest(std::weak_ptr<Node> new_dest) { dest_ = new_dest; }
     std::weak_ptr<Node> GetSource() { return source_; }
@@ -122,19 +122,38 @@ class Graph {
 
 
     reference operator*() const;
-    /*
+
     const_iterator& operator++();
     const_iterator operator++(int) {
         auto copy{*this};
         ++(*this);
         return copy;
     }
-     */
+
+    const_iterator& operator--();
+    const_iterator operator--(int) {
+        auto copy{*this};
+        --(*this);
+        return copy;
+    }
+
+    //==
+    friend bool operator==(const_iterator& lhs, const_iterator& rhs) {
+        return ((std::get<0>(*lhs) == std::get<0>(*rhs)) && (std::get<1>(*lhs) == std::get<1>(*rhs)) && (std::get<2>(*lhs) == std::get<2>(*rhs)));
+    }
+
+    //!=
+    friend bool operator!=(const_iterator& lhs, const_iterator& rhs) {
+        return !(lhs == rhs);
+    }
+
+
 
    private:
     typename std::map<N, std::shared_ptr<Node>>::iterator node_it_;
 
     const typename std::map<N, std::shared_ptr<Node>>::iterator sentinel_;
+
     typename std::set<std::shared_ptr<Edge>, CompareByValue<Edge>>::iterator edge_it_;
 
 
@@ -143,10 +162,9 @@ class Graph {
 
   };
 
-
-
     Graph() = default;
     Graph(typename std::vector<N>::const_iterator begin, typename std::vector<N>::const_iterator end) noexcept;
+
 
     Graph(typename std::vector<std::tuple<N, N, E>>::const_iterator tup_begin, typename std::vector<std::tuple<N, N, E>>::const_iterator tup_end) noexcept;
     Graph(std::initializer_list<N> list) noexcept;
@@ -172,10 +190,14 @@ class Graph {
     std::vector<N> GetNodes() const noexcept;
     std::vector<N> GetConnected(const N& src) const;
     std::vector<E> GetWeights(const N& src, const N& dst) const;
-    const_iterator find(const N&, const N&, const E&) const noexcept;
+    const_iterator find(const N& src, const N& dst, const E& val) const noexcept;
 
     bool erase(const N& src, const N& dst, const E& w) noexcept;
 
+  const_iterator cbegin() const noexcept;
+  const_iterator cend() const noexcept;
+  const_iterator begin() const noexcept;
+  const_iterator end() const noexcept;
 
     void PrintGraph() {
         std::cout << "printing graph...\n";
@@ -198,8 +220,7 @@ class Graph {
 
     ~Graph() = default;
 
-  const_iterator begin();
-  const_iterator end();
+
 
  private:
   /*
@@ -207,9 +228,6 @@ class Graph {
   class Edge;
   class const_iterator;
    */
-
-
-
 
   std::map<N, std::shared_ptr<Node>> nodes_;
 

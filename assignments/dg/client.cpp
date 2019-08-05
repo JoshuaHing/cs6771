@@ -26,7 +26,7 @@ int main() {
   g.InsertEdge("c", "d", 3);
 
   //g.Replace("a", "e");
-  g.MergeReplace("a", "b");
+  //g.MergeReplace("a", "b");
 
   /*
    * b - 5 - b
@@ -39,11 +39,27 @@ int main() {
    */
 
 
+
+    auto it = g.find("b", "d", 1);
+    std::cout << "value = " << std::get<0>(*it) << "\n";
+    std::cout << "value = " << std::get<1>(*it) << "\n";
+    std::cout << "value = " << std::get<2>(*it) << "\n";
+
   /*
-  auto it = g.begin();
+    for (int i = 0; i < 8; ++i) {
+        std::cout << "value = " << std::get<0>(*it) << "\n";
+        std::cout << "value = " << std::get<1>(*it) << "\n";
+        std::cout << "value = " << std::get<2>(*it) << "\n";
+        it++;
+        std::cout << "\n";
+    }
+    */
+
+
+
+
     //static_cast1 <void>(it);
-  std::cout << std::get<0>(*it) << "\n";
-   */
+
 
 
     //g.Replace("a", "e");
