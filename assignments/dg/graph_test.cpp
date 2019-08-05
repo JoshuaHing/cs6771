@@ -32,6 +32,7 @@
 */
 #include <sstream>
 #include <string>
+#include <tuple>
 
 #include "assignments/dg/graph.h"
 #include "catch.h"
@@ -649,10 +650,16 @@ SCENARIO("Find Method") {
     auto it = g.find(a1, a2, e);
     auto it2 = g.find(a1, a2, f);
 
+    auto begin = std::make_tuple (a1, a2, e);
+    auto middle = std::make_tuple (a1, a2, e);
+
     THEN("it should be begin, it2 should be end") {
       REQUIRE(it == g.begin());
       REQUIRE(++(++it) == g.end());
       REQUIRE(it2 == g.end());
+
+      REQUIRE(*it == begin);
+      REQUIRE(*(++it) == middle);
     }
   }
 }
@@ -687,6 +694,8 @@ SCENARIO("Erase Method iterator") {
     if (it != g.end()) {
       it2 = g.erase(it);
     }
+    e = 4;
+    auto begin = std::make_tuple (a1, a2, e);
 
     //checking nothing found case
     e = 6;
@@ -696,6 +705,8 @@ SCENARIO("Erase Method iterator") {
       REQUIRE(g.GetWeights("a","b")[0] == 4);
       REQUIRE(it2 == g.begin());
       REQUIRE(++it2 == g.end());
+
+      REQUIRE(*it2 == begin);
     }
   }
 }
@@ -745,6 +756,56 @@ SCENARIO("rbegin and rend Methods") {
     }
   }
 }
+
+//Thorough testing on iterator *,++,--,==,!=
+SCENARIO("iterator *,++,--,==,!=") {
+  WHEN("Setting up graph and using iterator *,++,--,==,!=") {
+    gdwg::Graph<std::string, int> g{"a", "b", "c"};
+
+    std::string a1{"a"};
+    std::string a2{"b"};
+    std::string a3{"c"};
+
+    int e1 = 4;
+    int e2 = 5;
+    int e3 = 6;
+
+    REQUIRE(g.InsertEdge(a1, a2, e1) == true);
+    REQUIRE(g.InsertEdge(a1, a3, e2) == true);
+    REQUIRE(g.InsertEdge(a2, a3, e3) == true);
+
+    auto begin = std::make_tuple (a1, a2, e1);
+    auto middle = std::make_tuple (a1, a3, e2);
+    auto end = std::make_tuple (a2, a3, e3);
+
+    THEN("interators should behave as iterators should") {
+
+      //testing ++
+      auto r1 = g.begin();
+      auto r2 = ++r1;
+      auto r3 = r2++;
+      auto r4 = ++r3;
+
+      //testing begin and end, ==, !=
+      REQUIRE(r1 == g.begin());
+      REQUIRE(r4 == g.end());
+      REQUIRE(r4 != g.end());
+
+      //testing --
+      REQUIRE(--r4 == r3);
+      REQUIRE(--r3 == r2);
+      REQUIRE(r2-- == r1);
+
+      //testing *
+      REQUIRE(*r1 == begin);
+      REQUIRE(*r2 == middle);
+      REQUIRE(*r3 == end);
+      REQUIRE(*r2++ == end);
+      REQUIRE(*r2-- == begin);
+    }
+  }
+}
+
 
 /*
   **************************************************************************************************
