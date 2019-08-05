@@ -21,14 +21,28 @@ struct CompareByValue {
     static_cast<void>(rhs);
     return true;
     */
-   if (((*(lhs->GetDest().lock())).GetValue() < (*(rhs->GetDest().lock())).GetValue())) {
-       return true;
-   }
 
-  if (((*(lhs->GetDest().lock())).GetValue() <= (*(rhs->GetDest().lock())).GetValue())&& lhs->GetValue() < rhs->GetValue()) {
-      return true;
-  }
-  return false;
+    // First check sources of each node
+    if (lhs->GetSource().lock()->GetValue() < rhs->GetSource().lock()->GetValue()) {
+        return true;
+    }
+
+    /*
+
+    // Then check dest values then weights
+    if (((*(lhs->GetDest().lock())).GetValue() <= (*(rhs->GetDest().lock())).GetValue())&& lhs->GetValue() < rhs->GetValue()) {
+        return true;
+    }
+     */
+
+      if ((lhs->GetDest().lock())->GetValue() < (rhs->GetDest().lock())->GetValue()) {
+          return true;
+      }
+
+      if ((lhs->GetDest().lock()->GetValue() <= (rhs->GetDest().lock())->GetValue()) && lhs->GetValue() < rhs->GetValue()){
+          return true;
+      }
+    return false;
 
 
    
@@ -56,7 +70,7 @@ class Graph {
 
     bool AddEdge(std::shared_ptr<Node> src, std::shared_ptr<Node> dst, const E& w);
 
-    std::set<std::shared_ptr<Edge>, CompareByValue<Edge>> GetEdges() { return edges_; }
+    std::set<std::shared_ptr<Edge>, CompareByValue<Edge>>& GetEdges() { return edges_; }
 
 
     void ClearEdges() { edges_.clear(); }

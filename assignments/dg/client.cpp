@@ -25,9 +25,26 @@ int main() {
 
   g.InsertEdge("c", "d", 3);
 
+  //g.Replace("a", "e");
+  g.MergeReplace("a", "b");
+
+  /*
+   * b - 5 - b
+   * b - 6 - b
+   * b - 4 - b
+   * b - 8 - c
+   * b - 2 - c
+   * b - 1 - d
+   * b - 4 - b
+   * c - 3 - d
+   */
+
+
+  /*
   auto it = g.begin();
-    //static_cast<void>(it);
+    //static_cast1 <void>(it);
   std::cout << std::get<0>(*it) << "\n";
+   */
 
 
     //g.Replace("a", "e");
@@ -45,11 +62,14 @@ int main() {
     g.InsertEdge("b", "d", 4);
      */
 
+    /*
+
     auto vec = g.GetWeights("a", "b");
     for (const auto& item : vec) {
         std::cout << item << "\n";
 
     }
+     */
 
 
   //std::cout << g.IsConnected("a", "d") << "\n";

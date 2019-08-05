@@ -82,8 +82,9 @@ bool gdwg::Graph<N, E>::InsertEdge(const N& src, const N& dst, const E& w) {
 
 template <typename N, typename E>
 bool gdwg::Graph<N, E>::Node::AddEdge(std::shared_ptr<Node> src, std::shared_ptr<Node> dst, const E& w) {
-    auto it = std::find_if(src->edges_.begin(), src->edges_.end(), [&dst, &w](std::shared_ptr<Edge> e) { return (dst == e->GetDest().lock() && w == e->GetValue()) ;});
+    auto it = std::find_if(src->edges_.begin(), src->edges_.end(), [&src, &dst, &w](std::shared_ptr<Edge> e) { return (src == e->GetSource().lock() && dst == e->GetDest().lock() && w == e->GetValue()) ;});
     if (!(it == src->edges_.end())) return false;
+    std::cout << "ADDING " << src->GetValue() << " - " << w << " - " << dst->GetValue() << "\n";
     src->edges_.insert(std::make_shared<Edge>(Edge{src, dst, w}));
     return true;
 }
@@ -117,8 +118,11 @@ bool gdwg::Graph<N, E>::Replace(const N& oldData, const N& newData) {
         for (const auto& edge : node.second->GetEdges()) {
             if ((edge->GetSource().lock())->GetValue() == oldData) {
                 edge->SetSource(nodes_[newData]);
+
+
             } else if ((edge->GetDest().lock())->GetValue() == oldData) {
                 edge->SetDest(nodes_[newData]);
+
             }
         }
     }
@@ -140,15 +144,25 @@ void gdwg::Graph<N, E>::MergeReplace(const N& oldData, const N& newData) {
     for (const auto& node : nodes_) {
         for (const auto& edge : node.second->GetEdges()) {
             if ((edge->GetSource().lock())->GetValue() == oldData) {
-                edge->SetSource(nodes_[newData]);
+                //edge->SetSource(nodes_[newData]);
+                std::cout << "inserting " << newData << " - " << edge->GetValue() << " - " << (edge->GetDest().lock())->GetValue() << "\n";
+                auto val = InsertEdge(newData, (edge->GetDest().lock())->GetValue(), edge->GetValue());
+                std::cout << val << "\n";
+                nodes_[newData]->GetEdges().erase(edge);
             } else if ((edge->GetDest().lock())->GetValue() == oldData) {
-                edge->SetDest(nodes_[newData]);
+                //edge->SetDest(nodes_[newData]);
+                std::cout << "inserting " << (edge->GetSource().lock())->GetValue()<< " - " << edge->GetValue() << " - " << newData << "\n";;
+                //Insert edge with new data
+                InsertEdge((edge->GetSource().lock())->GetValue(), newData, edge->GetValue());
+
+                //Erase old edge
+                nodes_[(edge->GetSource().lock())->GetValue()]->GetEdges().erase(edge);
             }
           
         }
         
     }
-    DeleteNode(oldData);
+    //DeleteNode(oldData);
 
 }
 
