@@ -84,7 +84,7 @@ template <typename N, typename E>
 bool gdwg::Graph<N, E>::Node::AddEdge(std::shared_ptr<Node> src, std::shared_ptr<Node> dst, const E& w) {
     auto it = std::find_if(src->edges_.begin(), src->edges_.end(), [&src, &dst, &w](std::shared_ptr<Edge> e) { return (src == e->GetSource().lock() && dst == e->GetDest().lock() && w == e->GetValue()) ;});
     if (!(it == src->edges_.end())) return false;
-    std::cout << "ADDING " << src->GetValue() << " - " << w << " - " << dst->GetValue() << "\n";
+    //std::cout << "ADDING " << src->GetValue() << " - " << w << " - " << dst->GetValue() << "\n";
     src->edges_.insert(std::make_shared<Edge>(Edge{src, dst, w}));
     return true;
 }
@@ -145,13 +145,12 @@ void gdwg::Graph<N, E>::MergeReplace(const N& oldData, const N& newData) {
         for (const auto& edge : node.second->GetEdges()) {
             if ((edge->GetSource().lock())->GetValue() == oldData) {
                 //edge->SetSource(nodes_[newData]);
-                std::cout << "inserting " << newData << " - " << edge->GetValue() << " - " << (edge->GetDest().lock())->GetValue() << "\n";
-                auto val = InsertEdge(newData, (edge->GetDest().lock())->GetValue(), edge->GetValue());
-                std::cout << val << "\n";
+                //std::cout << "inserting " << newData << " - " << edge->GetValue() << " - " << (edge->GetDest().lock())->GetValue() << "\n";
+                InsertEdge(newData, (edge->GetDest().lock())->GetValue(), edge->GetValue());
                 nodes_[newData]->GetEdges().erase(edge);
             } else if ((edge->GetDest().lock())->GetValue() == oldData) {
                 //edge->SetDest(nodes_[newData]);
-                std::cout << "inserting " << (edge->GetSource().lock())->GetValue()<< " - " << edge->GetValue() << " - " << newData << "\n";;
+                //std::cout << "inserting " << (edge->GetSource().lock())->GetValue()<< " - " << edge->GetValue() << " - " << newData << "\n";;
                 //Insert edge with new data
                 InsertEdge((edge->GetSource().lock())->GetValue(), newData, edge->GetValue());
 
@@ -162,7 +161,7 @@ void gdwg::Graph<N, E>::MergeReplace(const N& oldData, const N& newData) {
         }
         
     }
-    //DeleteNode(oldData);
+    DeleteNode(oldData);
 
 }
 

@@ -27,19 +27,12 @@ struct CompareByValue {
         return true;
     }
 
-    /*
 
-    // Then check dest values then weights
-    if (((*(lhs->GetDest().lock())).GetValue() <= (*(rhs->GetDest().lock())).GetValue())&& lhs->GetValue() < rhs->GetValue()) {
-        return true;
-    }
-     */
-
-      if ((lhs->GetDest().lock())->GetValue() < (rhs->GetDest().lock())->GetValue()) {
+      if (lhs->GetSource().lock()->GetValue() <= rhs->GetSource().lock()->GetValue() && lhs->GetDest().lock()->GetValue() < rhs->GetDest().lock()->GetValue()) {
           return true;
       }
 
-      if ((lhs->GetDest().lock()->GetValue() <= (rhs->GetDest().lock())->GetValue()) && lhs->GetValue() < rhs->GetValue()){
+      if (lhs->GetSource().lock()->GetValue() <= rhs->GetSource().lock()->GetValue() && lhs->GetDest().lock()->GetValue() <= rhs->GetDest().lock()->GetValue() && lhs->GetValue() < rhs->GetValue()){
           return true;
       }
     return false;
