@@ -5,6 +5,8 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string>
+#include <sstream>
 #include <tuple>
 #include <vector>
 #include <typeinfo>
@@ -14,50 +16,50 @@ namespace gdwg {
 template<typename T>
 struct CompareByValue {
   bool operator()(const std::shared_ptr<T>& lhs, const std::shared_ptr<T>& rhs) const {
-
       // Order first by source value
       if (lhs->GetSource().lock()->GetValue() < rhs->GetSource().lock()->GetValue()) {
           return true;
       }
 
       // then by destination
-      if (lhs->GetSource().lock()->GetValue() <= rhs->GetSource().lock()->GetValue() && lhs->GetDest().lock()->GetValue() < rhs->GetDest().lock()->GetValue()) {
-          return true;
+      if (lhs->GetSource().lock()->GetValue() <= rhs->GetSource().lock()->GetValue()) {
+          if (lhs->GetDest().lock()->GetValue() < rhs->GetDest().lock()->GetValue()) {
+              return true;
+          }
       }
 
       // then by edge weight
-      if (lhs->GetSource().lock()->GetValue() <= rhs->GetSource().lock()->GetValue() && lhs->GetDest().lock()->GetValue() <= rhs->GetDest().lock()->GetValue() && lhs->GetValue() < rhs->GetValue()){
-          return true;
+      if (lhs->GetSource().lock()->GetValue() <= rhs->GetSource().lock()->GetValue()) {
+          if (lhs->GetDest().lock()->GetValue() <= rhs->GetDest().lock()->GetValue()) {
+              if (lhs->GetValue() < rhs->GetValue()) {
+                return true;
+              }
+          }
       }
       return false;
-
   }
 };
 
 class const_iterator;
-
 template<typename N, typename E>
 class Graph {
  public:
-
   class Node;
   class Edge;
   class const_iterator;
 
   using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-
   class Node {
    public:
-
     // Constructors / Destructors
     Node() = delete;
-    Node(N value): value_{value} {}
+    explicit Node(N value): value_{value} {}
     ~Node() = default;
 
     // Getters / Setters
     N GetValue() const { return value_; }
-    std::map<N, std::shared_ptr<Node>>& GetNodes() { return nodes_; };
+    std::map<N, std::shared_ptr<Node>>& GetNodes() { return nodes_; }
     void SetValue(const N& val) { value_ = val; }
     std::set<std::shared_ptr<Edge>, CompareByValue<Edge>>& GetEdges()  { return edges_; }
     void SetEdges(std::set<std::shared_ptr<Edge>, CompareByValue<Edge>> e) { edges_ = e; }
@@ -74,16 +76,15 @@ class Graph {
    private:
     N value_;
     std::set<std::shared_ptr<Edge>, CompareByValue<Edge>> edges_;
-
   };
 
 
   class Edge {
    public:
-
     // Constructors / Destructors
     Edge() = delete;
-    Edge(std::weak_ptr<Node> source, std::weak_ptr<Node> dest, E weight): source_{source}, dest_{dest}, weight_{weight} {}
+    Edge(std::weak_ptr<Node> source, std::weak_ptr<Node> dest, E weight):
+    source_{source}, dest_{dest}, weight_{weight} {}
     ~Edge() = default;
 
     // Getters / Setters
@@ -97,12 +98,10 @@ class Graph {
     std::weak_ptr<Node> source_;
     std::weak_ptr<Node> dest_;
     E weight_;
-
   };
 
 
   class const_iterator {
-
    public:
     using iterator_category = std::bidirectional_iterator_tag;
     using value_type = std::tuple<N, N, E>;
@@ -130,11 +129,18 @@ class Graph {
         return copy;
     }
 
-    friend bool operator==(const const_iterator& lhs, const const_iterator& rhs) {
-        return lhs.node_it_ == rhs.node_it_ && (lhs.node_it_ == lhs.sentinel_ || lhs.edge_it_ == rhs.edge_it_);
+    friend bool operator==(
+        const const_iterator& lhs,
+        const const_iterator& rhs) {
+        return (
+            lhs.node_it_ == rhs.node_it_ &&
+            (lhs.node_it_ == lhs.sentinel_ || lhs.edge_it_ == rhs.edge_it_)
+            );
     }
 
-    friend bool operator!=(const const_iterator& lhs, const const_iterator& rhs) {
+    friend bool operator!=(
+        const const_iterator& lhs,
+        const const_iterator& rhs) {
         return !(lhs == rhs);
     }
 
@@ -152,8 +158,14 @@ class Graph {
     typename std::set<std::shared_ptr<Edge>, CompareByValue<Edge>>::iterator edge_it_;
 
     friend class Graph;
-    const_iterator(const decltype(node_it_)& node_it, const decltype(sentinel_)& sentinel, const decltype(last_node_)& last_node, const decltype(edge_it_)& edge_it): node_it_{node_it}, sentinel_{sentinel}, last_node_{last_node}, edge_it_{edge_it}  {}
-
+    const_iterator(
+        const decltype(node_it_)& node_it,
+        const decltype(sentinel_)& sentinel,
+        const decltype(last_node_)& last_node,
+        const decltype(edge_it_)& edge_it):
+        node_it_{node_it},
+        sentinel_{sentinel},
+        last_node_{last_node}, edge_it_{edge_it}  {}
   };
 
   // Constructors / Destructors
@@ -178,10 +190,17 @@ class Graph {
   bool DeleteNode(const N&) noexcept;
   bool Replace(const N& oldData, const N& newData);
   void MergeReplace(const N& oldData, const N& newData);
+  void Clear();
   bool IsNode(const N& val) const noexcept ;
   bool IsConnected(const N& src, const N& dst) const;
-  const_iterator find(const N& src, const N& dst, const E& val) const noexcept;
-  bool erase(const N& src, const N& dst, const E& w) noexcept;
+  const_iterator find(
+      const N& src,
+      const N& dst,
+      const E& val) const noexcept;
+  bool erase(
+      const N& src,
+      const N& dst,
+      const E& w) noexcept;
   const_iterator erase(const_iterator it) noexcept;
 
 
@@ -195,7 +214,9 @@ class Graph {
   const_reverse_iterator rbegin();
   const_reverse_iterator rend();
 
-  friend bool operator==(const gdwg::Graph<N, E>& a, const gdwg::Graph<N, E>& b) noexcept {
+  friend bool operator==(
+      const gdwg::Graph<N, E>& a,
+      const gdwg::Graph<N, E>& b) noexcept {
       //test number of nodes
       if (!a.nodes_.size() == b.nodes_.size()) {
           return false;
@@ -218,11 +239,15 @@ class Graph {
       }
   }
 
-  friend bool operator!=(const gdwg::Graph<N, E>& a, const gdwg::Graph<N, E>& b) noexcept {
+  friend bool operator!=(
+      const gdwg::Graph<N, E>& a,
+      const gdwg::Graph<N, E>& b) noexcept {
       return !(a == b);
   }
 
-  friend std::ostream& operator<<(std::ostream& os, const gdwg::Graph<N, E>& g) noexcept {
+  friend std::ostream& operator<<(
+      std::ostream& os,
+      const gdwg::Graph<N, E>& g) noexcept {
       for (const auto& node : g.nodes_) {
           os << node.first << " (" << "\n";
           for (const auto& ptr_set : node.second->GetEdges()) {
@@ -233,11 +258,9 @@ class Graph {
       return os;
   }
 
-
  private:
     // Map of nodes. To access shared pointer: node_[val]
   std::map<N, std::shared_ptr<Node>> nodes_;
-
 };
 
 }

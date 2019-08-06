@@ -67,14 +67,9 @@ int main() {
     }
     */
 
-
-    for (auto it = g.crbegin(); it != g.crend(); ++it) {
-        std::cout << "value = " << std::get<0>(*it) << "\n";
-        std::cout << "value = " << std::get<1>(*it) << "\n";
-        std::cout << "value = " << std::get<2>(*it) << "\n";
-        std::cout << "\n";
-    }
-
+    std::vector<std::string> v{"hello", "how"};
+    gdwg::Graph<std::string, double> b{v.begin(), v.end()};
+    static_cast<void>(b);
 
 
 
@@ -109,7 +104,6 @@ int main() {
 
   //std::cout << g.IsConnected("a", "d") << "\n";
 
-  g.PrintGraph();
 /*
 
   std::cout << g << '\n';

@@ -7,7 +7,7 @@
 template <typename N, typename E>
 gdwg::Graph<N,E>::Graph (typename std::vector<N>::const_iterator begin, typename std::vector<N>::const_iterator end) noexcept {
     for (auto it = begin; it != end; ++it ) {
-        nodes_.insert(std::make_shared<N>(Node{*it}));
+        nodes_.insert({*it, std::make_shared<Node>(Node{*it})});
     }
 }
 
@@ -86,6 +86,7 @@ bool gdwg::Graph<N, E>::Node::AddEdge(std::shared_ptr<Node> src, std::shared_ptr
 template <typename N, typename E>
 bool gdwg::Graph<N, E>::DeleteNode(const N& val) noexcept {
     if (IsNode(val)) {
+        nodes_[val]->GetEdges().clear();
         nodes_.erase(val);
         return true;
     }
@@ -122,7 +123,6 @@ bool gdwg::Graph<N, E>::Replace(const N& oldData, const N& newData) {
     DeleteNode(oldData);
 
     return true;
-
 }
 
 template <typename N, typename E>
@@ -150,7 +150,13 @@ void gdwg::Graph<N, E>::MergeReplace(const N& oldData, const N& newData) {
 
     // Now that there aren't any hanging pointers, we can safely delete the old node
     DeleteNode(oldData);
+}
 
+template <typename N, typename E>
+void gdwg::Graph<N, E>::Clear() {
+    for (const auto& node : nodes_) {
+        DeleteNode(node.second->GetValue());
+    }
 }
 
 template <typename N, typename E>
@@ -217,7 +223,6 @@ std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) const {
         }
     }
     return weights;
-
 }
 
 template <typename N, typename E>
