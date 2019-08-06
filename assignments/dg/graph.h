@@ -48,8 +48,13 @@ template<typename N, typename E>
 class Graph {
  public:
 
+
+
   class Node;
   class Edge;
+  class const_iterator;
+
+  using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
 
   class Node {
@@ -148,7 +153,6 @@ class Graph {
     }
 
 
-
    private:
     typename std::map<N, std::shared_ptr<Node>>::iterator node_it_;
 
@@ -158,11 +162,11 @@ class Graph {
 
 
     friend class Graph;
-
     const_iterator(const decltype(node_it_)& node_it, const decltype(sentinel_)& sentinel, const decltype(edge_it_)& edge_it): node_it_{node_it}, sentinel_{sentinel}, edge_it_{edge_it} {}
 
-
   };
+
+
 
   Graph() = default;
   Graph(typename std::vector<N>::const_iterator begin, typename std::vector<N>::const_iterator end) noexcept;
@@ -192,19 +196,25 @@ class Graph {
   std::vector<N> GetNodes() const noexcept;
   std::vector<N> GetConnected(const N& src) const;
   std::vector<E> GetWeights(const N& src, const N& dst) const;
+
+  //add const..
   const_iterator find(const N& src, const N& dst, const E& val) noexcept;
 
   bool erase(const N& src, const N& dst, const E& w) noexcept;
+  const_iterator erase(const_iterator it) noexcept;
 
-  /*
-const_iterator cbegin() const noexcept;
-const_iterator cend() const noexcept;
-   */
 
   const_iterator cbegin();
   const_iterator cend();
   const_iterator begin();
   const_iterator end();
+
+  const_reverse_iterator crbegin();
+  const_reverse_iterator crend();
+  const_reverse_iterator rbegin();
+  const_reverse_iterator rend();
+
+
 
 
   void PrintGraph() {
@@ -224,6 +234,8 @@ const_iterator cend() const noexcept;
       }
 
   }
+
+
 
 
   ~Graph() = default;
@@ -251,28 +263,31 @@ const_iterator cend() const noexcept;
 
 #endif  // ASSIGNMENTS_DG_GRAPH_H_
 
-    //--------------------------FRIEND CODE-------------------------//
-    void PrintGraph() {
-      auto nodeIt = nodes_.begin();
-      auto edgeIt = this.begin();
-      boolean hasEdge = false;
 
-      while (nodeIt != nodes_.end() && edgeIt != this.end()){
-        if(nodeIt->first == std::get<0>(*edgeIt)){
-          hasEdge = true;
-          std::cout << std::get<0>(*edgeIt) << " (" << "\n" << "  " << std::get<1>(*edgeIt) << " | " << std::get<2>(*edgeIt) << "\n" << ")" << "\n";
-          edgeIt++;
-        } else {
-          if(hasEdge == true){
-            nodeIt++;
-            hasEdge = false;
+    //--------------------------FRIEND CODE-------------------------//
+      /*
+  void PrintGraph() {
+      auto nodeIt = nodes_.begin();
+      auto edgeIt = begin();
+      bool hasEdge = false;
+
+      while (nodeIt != nodes_.end() && edgeIt != end()){
+          if(nodeIt->first == std::get<0>(*edgeIt)){
+              hasEdge = true;
+              std::cout << std::get<0>(*edgeIt) << " (" << "\n" << "  " << std::get<1>(*edgeIt) << " | " << std::get<2>(*edgeIt) << "\n" << ")" << "\n";
+              edgeIt++;
           } else {
-            std::cout << nodeIt->first << " (" << "\n" << ")" << "\n";
-            nodeIt++;
+              if(hasEdge == true){
+                  nodeIt++;
+                  hasEdge = false;
+              } else {
+                  std::cout << nodeIt->first << " (" << "\n" << ")" << "\n";
+                  nodeIt++;
+              }
           }
-        }
       }
-    }
+  }
+
 
     boolean ==(Graph a, Graph b){
       auto nodeItA = a.nodes_.begin();
@@ -307,3 +322,4 @@ const_iterator cend() const noexcept;
     boolean !=(Graph a, Graph b){
       return !(a == b);
     }
+    */

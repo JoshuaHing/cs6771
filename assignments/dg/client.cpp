@@ -41,17 +41,6 @@ int main() {
 
 
 
-
-    auto it = g.find("b", "d", 1);
-    if (it == g.end()) {
-        std::cout << "failure...\n";
-
-    } else {
-        std::cout << "value = " << std::get<0>(*it) << "\n";
-        std::cout << "value = " << std::get<1>(*it) << "\n";
-        std::cout << "value = " << std::get<2>(*it) << "\n";
-    }
-
     //auto it = g.end();
     //static_cast<void>(it);
 
@@ -65,6 +54,21 @@ int main() {
     }
     */
 
+
+
+
+    /*
+    for (auto it = g.crbegin(); it != g.crend(); it++) {
+        std::cout << "value = " << std::get<0>(*it) << "\n";
+        std::cout << "value = " << std::get<1>(*it) << "\n";
+        std::cout << "value = " << std::get<2>(*it) << "\n";
+    }
+     */
+    auto it = g.end();
+    --it;
+    std::cout << "value = " << std::get<0>(*it) << "\n";
+    std::cout << "value = " << std::get<1>(*it) << "\n";
+    std::cout << "value = " << std::get<2>(*it) << "\n";
 
 
 

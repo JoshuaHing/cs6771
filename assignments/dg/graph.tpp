@@ -69,7 +69,6 @@ bool gdwg::Graph<N, E>::InsertNode(const N& val) noexcept {
 
 template <typename N, typename E>
 bool gdwg::Graph<N, E>::InsertEdge(const N& src, const N& dst, const E& w) {
-    //auto src_it = std::find_if(nodes_.begin(), nodes_.end(), [&src](std::map<N, std::shared_ptr<Node>> n) { return (src == n.second->GetValue()); });
     if (!nodes_.count(src)) {
         throw std::runtime_error("Cannot call Graph::InsertEdge when either src or dst node does not exist");
     }
@@ -84,7 +83,6 @@ template <typename N, typename E>
 bool gdwg::Graph<N, E>::Node::AddEdge(std::shared_ptr<Node> src, std::shared_ptr<Node> dst, const E& w) {
     auto it = std::find_if(src->edges_.begin(), src->edges_.end(), [&src, &dst, &w](std::shared_ptr<Edge> e) { return (src == e->GetSource().lock() && dst == e->GetDest().lock() && w == e->GetValue()) ;});
     if (!(it == src->edges_.end())) return false;
-    //std::cout << "ADDING " << src->GetValue() << " - " << w << " - " << dst->GetValue() << "\n";
     src->edges_.insert(std::make_shared<Edge>(Edge{src, dst, w}));
     return true;
 }
@@ -234,17 +232,11 @@ std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) const {
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::find(const N& src, const N& dst, const E& w) noexcept {
-
-
     return std::find_if(begin(), end(), [&src, &dst, &w] (const std::tuple<N, N, E> curr) {
       return (std::get<0>(curr) == src && std::get<1>(curr) == dst && std::get<2>(curr) == w);
     });
 
 }
-
-
-
-
 
 template <typename N, typename E>
 bool gdwg::Graph<N, E>::erase(const N& src, const N& dst, const E& w) noexcept {
@@ -254,14 +246,29 @@ bool gdwg::Graph<N, E>::erase(const N& src, const N& dst, const E& w) noexcept {
     for (const auto& edge : nodes_[src]->GetEdges()) {
         if ((edge->GetDest().lock())->GetValue() == dst) {
             if (edge->GetValue() == w) {
-                nodes_[src].erase(edge);
+                nodes_[src]->GetEdges().erase(edge);
                 return true;
             }
+
+
         }
     }
     return false;
 }
 
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::erase(gdwg::Graph<N, E>::const_iterator it) noexcept {
+
+
+    auto res = std::find_if(begin(), end(), [&it](auto curr) { return *it == curr; });
+    if (res == end()) {
+        return res;
+    }
+    res++;
+    erase(std::get<0>(*it), std::get<1>(*it), std::get<2>(*it));
+
+    return res;
+}
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator::reference gdwg::Graph<N, E>::const_iterator::operator*() const  {
@@ -290,6 +297,13 @@ typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::o
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::operator--() {
+    if (node_it_ == sentinel_) {
+        std::cout << "yello\n";
+        std::advance(node_it_, -1);
+        edge_it_ = node_it_->second->GetEdges().end();
+        std::advance(edge_it_, -1);
+        return *this;
+    }
     if (edge_it_ == node_it_->second->GetEdges().begin()) {
         --node_it_;
         edge_it_ = node_it_->second->GetEdges().end();
@@ -313,17 +327,36 @@ typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cend() {
 }
 
 
-
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::begin() {
     return cbegin();
 }
 
-
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::end() {
     return cend();
 }
+
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_reverse_iterator gdwg::Graph<N, E>::crbegin() {
+    return const_reverse_iterator{cbegin()};
+}
+
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_reverse_iterator gdwg::Graph<N, E>::crend() {
+    return const_reverse_iterator{cend()};
+}
+
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_reverse_iterator gdwg::Graph<N, E>::rbegin() {
+    return crbegin();
+}
+
+template <typename N, typename E>
+typename gdwg::Graph<N, E>::const_reverse_iterator gdwg::Graph<N, E>::rend() {
+    return crend();
+}
+
 
 
 #endif
