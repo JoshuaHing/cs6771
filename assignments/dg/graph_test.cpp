@@ -882,7 +882,7 @@ SCENARIO("Print Friend") {
 
     gdwg::Graph<int, int> g2;
     std::stringstream stream2;
-    stream1 << g2;
+    stream2 << g2;
 
     gdwg::Graph<std::string, int> g3{"a", "b", "z"};
     REQUIRE(g3.InsertEdge("a", "b", 1) == true);
@@ -892,11 +892,11 @@ SCENARIO("Print Friend") {
     REQUIRE(g3.InsertEdge("z", "b", 999) == true);
     REQUIRE(g3.InsertEdge("z", "z", -1) == true);
     std::stringstream stream3;
-    stream1 << g3;
+    stream3 << g3;
 
     gdwg::Graph<int, int> g4{"a", "b", "c"};
     std::stringstream stream4;
-    stream1 << g4;
+    stream4 << g4;
 
     THEN("They should look right"){
       REQUIRE(stream1.str() ==  "a (\n"
