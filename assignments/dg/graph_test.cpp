@@ -1,5 +1,45 @@
 /*
 
+  friend bool operator==(const gdwg::Graph<N, E>& a, const gdwg::Graph<N, E>& b) noexcept {
+    //test number of nodes
+    if (!a.nodes_.size() == b.nodes_.size()) {
+      return false;
+    }
+    //test if same nodes
+    for (const auto& node : a.nodes_) {
+      if (!b.nodes_.count(node.first)) {
+        return false;
+      }
+    }
+    //compare with << print
+    std::stringstream streamA;
+    streamA << a;
+    std::stringstream streamB;
+    streamB << b;
+    if(streamA.str() == streamB.str()){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  friend bool operator!=(const gdwg::Graph<N, E>& a, const gdwg::Graph<N, E>& b) noexcept {
+    return !(a == b);
+  }
+
+
+
+  friend std::ostream& operator<<(std::ostream& os, const gdwg::Graph<N, E>& g) noexcept {
+    for (const auto& node : g.nodes_) {
+      os << node.first << " (" << "\n";
+      for (const auto& ptr_set : node.second->GetEdges()) {
+        os << "  " << ptr_set->GetDest().lock()->GetValue() << " | " << ptr_set->GetValue() << "\n";
+      }
+      os << ")\n";
+    }
+    return os;
+  }
+
   == Explanation and rational of testing ==
 
   Explain and justify how you approached testing, the degree
@@ -882,7 +922,7 @@ SCENARIO("Print Friend") {
 
     gdwg::Graph<int, int> g2;
     std::stringstream stream2;
-    stream1 << g2;
+    stream2 << g2;
 
     gdwg::Graph<std::string, int> g3{"a", "b", "z"};
     REQUIRE(g3.InsertEdge("a", "b", 1) == true);
@@ -892,11 +932,11 @@ SCENARIO("Print Friend") {
     REQUIRE(g3.InsertEdge("z", "b", 999) == true);
     REQUIRE(g3.InsertEdge("z", "z", -1) == true);
     std::stringstream stream3;
-    stream1 << g3;
+    stream3 << g3;
 
     gdwg::Graph<int, int> g4{"a", "b", "c"};
     std::stringstream stream4;
-    stream1 << g4;
+    stream4 << g4;
 
     THEN("They should look right"){
       REQUIRE(stream1.str() ==  "a (\n"
