@@ -281,11 +281,11 @@ typename gdwg::Graph<N, E>::const_iterator::reference gdwg::Graph<N, E>::const_i
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::operator++() {
-
     ++edge_it_;
     if (edge_it_ == node_it_->second->GetEdges().end()) {
         do {
             ++node_it_;
+            ++node_pos_;
         } while (node_it_ != sentinel_ && node_it_->second->GetEdges().begin() == node_it_->second->GetEdges().end());
         if (node_it_ != sentinel_) {
             edge_it_ = node_it_->second->GetEdges().begin();
@@ -297,17 +297,17 @@ typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::o
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::operator--() {
+    std::cout << "called!!\n";
     if (node_it_ == sentinel_) {
-        std::cout << "yello\n";
-        std::advance(node_it_, -1);
+        node_it_ = std::prev(node_it_);
         edge_it_ = node_it_->second->GetEdges().end();
-        std::advance(edge_it_, -1);
+        --edge_it_;
         return *this;
     }
     if (edge_it_ == node_it_->second->GetEdges().begin()) {
         --node_it_;
         edge_it_ = node_it_->second->GetEdges().end();
-        std::advance(edge_it_, -1);
+        --edge_it_;
     } else {
         --edge_it_;
     }
@@ -339,12 +339,12 @@ typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::end() {
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_reverse_iterator gdwg::Graph<N, E>::crbegin() {
-    return const_reverse_iterator{cbegin()};
+    return const_reverse_iterator{cend()};
 }
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_reverse_iterator gdwg::Graph<N, E>::crend() {
-    return const_reverse_iterator{cend()};
+    return const_reverse_iterator{cbegin()};
 }
 
 template <typename N, typename E>

@@ -160,9 +160,10 @@ class Graph {
 
     typename std::set<std::shared_ptr<Edge>, CompareByValue<Edge>>::iterator edge_it_;
 
+    size_t node_pos_;
 
     friend class Graph;
-    const_iterator(const decltype(node_it_)& node_it, const decltype(sentinel_)& sentinel, const decltype(edge_it_)& edge_it): node_it_{node_it}, sentinel_{sentinel}, edge_it_{edge_it} {}
+    const_iterator(const decltype(node_it_)& node_it, const decltype(sentinel_)& sentinel, const decltype(edge_it_)& edge_it, size_t node_pos = 0): node_it_{node_it}, sentinel_{sentinel}, edge_it_{edge_it}, node_pos_{node_pos} {}
 
   };
 
