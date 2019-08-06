@@ -654,12 +654,10 @@ SCENARIO("Find Method") {
     auto middle = std::make_tuple (a1, a2, e);
 
     THEN("it should be begin, it2 should be end") {
-      REQUIRE(it == g.begin());
+      REQUIRE(*(++it) == middle);
+      REQUIRE(--it == g.begin());
       REQUIRE(++(++it) == g.end());
       REQUIRE(it2 == g.end());
-
-      REQUIRE(*it == begin);
-      REQUIRE(*(++it) == middle);
     }
   }
 }
@@ -705,8 +703,6 @@ SCENARIO("Erase Method iterator") {
       REQUIRE(g.GetWeights("a","b")[0] == 4);
       REQUIRE(it2 == g.begin());
       REQUIRE(++it2 == g.end());
-
-      REQUIRE(*it2 == begin);
     }
   }
 }
@@ -780,28 +776,46 @@ SCENARIO("iterator *,++,--,==,!=") {
 
     THEN("interators should behave as iterators should") {
 
-      //testing ++
+      //testing pre ++
       auto r1 = g.begin();
-      auto r2 = ++r1;
-      auto r3 = r2++;
-      auto r4 = ++r3;
+      auto r2 = ++g.begin();
+      auto r3 = ++(++g.begin());
+      auto r4 = ++(++(++g.begin()));
 
       //testing begin and end, ==, !=
       REQUIRE(r1 == g.begin());
       REQUIRE(r4 == g.end());
-      REQUIRE(r4 != g.end());
+      REQUIRE(r3 != g.end());
 
-      //testing --
+      //testing pre --
       REQUIRE(--r4 == r3);
       REQUIRE(--r3 == r2);
-      REQUIRE(r2-- == r1);
+      REQUIRE(--r2 == r1);
+
+      //testing post ++
+      r4++;
+      r3++;
+      r2++;
+
+      REQUIRE(r2 == ++g.begin());
+      REQUIRE(r3 == ++(++g.begin()));
+      REQUIRE(r4 == ++(++(++g.begin())));
+
+      //testing post --
+
+      r4--;
+      r2--;
+      REQUIRE(r4 == r3);
+      REQUIRE(r2 == r1);
+      r4++;
+      r2++;
 
       //testing *
       REQUIRE(*r1 == begin);
-      REQUIRE(*r2 == middle);
+      REQUIRE(*r2++ == middle);
       REQUIRE(*r3 == end);
-      REQUIRE(*r2++ == end);
-      REQUIRE(*r2-- == begin);
+      REQUIRE(*r2-- == end);
+      REQUIRE(*r2 == middle);
     }
   }
 }
@@ -880,6 +894,10 @@ SCENARIO("Print Friend") {
     std::stringstream stream3;
     stream1 << g3;
 
+    gdwg::Graph<int, int> g4{"a", "b", "c"};
+    std::stringstream stream4;
+    stream1 << g4;
+
     THEN("They should look right"){
       REQUIRE(stream1.str() ==  "a (\n"
                                 "  b | 1\n"
@@ -904,6 +922,13 @@ SCENARIO("Print Friend") {
                                 "z (\n"
                                 "  b | 999\n"
                                 "  z | -1\n"
+                                ")\n"
+                                );
+      REQUIRE(stream4.str() ==  "a (\n"
+                                ")\n"
+                                "b (\n"
+                                ")\n"
+                                "c (\n"
                                 ")\n"
                                 );
     }
