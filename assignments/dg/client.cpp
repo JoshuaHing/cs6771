@@ -6,6 +6,7 @@
 // Note: At the moment, there is no client.sampleout. Please do your own testing
 
 int main() {
+    /*
   gdwg::Graph<std::string, int> g;
   g.InsertNode("a");
   g.InsertNode("b");
@@ -26,13 +27,16 @@ int main() {
 
   g.InsertEdge("c", "d", 3);
 
+    g.DeleteNode("d");
+    g.DeleteNode("e");
 
-  /*
-  auto it = g.erase(g.begin());
-    std::cout << "value = " << std::get<0>(*it) << "\n";
-    std::cout << "value = " << std::get<1>(*it) << "\n";
-    std::cout << "value = " << std::get<2>(*it) << "\n";
-    */
+     */
+    gdwg::Graph<std::string, int> g{"a", "b"};
+    g.InsertEdge("a", "b", 3);
+    g.InsertEdge("b", "a", 3);
+    auto w = g.GetWeights("a", "b");
+    std::cout << w[0] << "\n";
+   // g.IsConnected("a", "b");
   //g.Replace("a", "e");
   //g.MergeReplace("a", "b");
 
@@ -67,7 +71,6 @@ int main() {
     }
     */
 
-    g.IsConnected("a", "b");
 
 
     //static_cast1 <void>(it);

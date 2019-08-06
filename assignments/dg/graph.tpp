@@ -4,6 +4,7 @@
 #include <algorithm>
 
 
+
 template <typename N, typename E>
 gdwg::Graph<N,E>::Graph (typename std::vector<N>::const_iterator begin, typename std::vector<N>::const_iterator end) noexcept {
     for (auto it = begin; it != end; ++it ) {
@@ -13,7 +14,6 @@ gdwg::Graph<N,E>::Graph (typename std::vector<N>::const_iterator begin, typename
 
 template <typename N, typename E>
 gdwg::Graph<N, E>::Graph (typename std::vector<std::tuple<N, N, E>>::const_iterator tup_begin, typename std::vector<std::tuple<N, N, E>>::const_iterator tup_end) noexcept {
-
     for (auto it = tup_begin; it != tup_end; ++it) {
         std::tuple<N, N, E> tup = *it;
         InsertNode(std::get<0>(tup));
@@ -72,7 +72,6 @@ bool gdwg::Graph<N, E>::InsertEdge(const N& src, const N& dst, const E& w) {
         throw std::runtime_error("Cannot call Graph::InsertEdge when either src or dst node does not exist");
     }
     return (nodes_[src]->AddEdge(nodes_[src], nodes_[dst], w));
-
 }
 
 template <typename N, typename E>
@@ -90,6 +89,7 @@ bool gdwg::Graph<N, E>::DeleteNode(const N& val) noexcept {
         nodes_.erase(val);
         return true;
     }
+
     return false;
 }
 
@@ -102,27 +102,27 @@ bool gdwg::Graph<N, E>::Replace(const N& oldData, const N& newData) {
         return false;
     }
 
-    // First, insert the edge and copy over the data
+
     InsertNode(newData);
     nodes_[newData]->SetEdges(nodes_[oldData]->GetEdges());
 
     for (const auto& node : nodes_) {
         for (const auto& edge : node.second->GetEdges()) {
-
-            // If there is any instance of the old data in any of the edges, update
-            // them to point to the new node
             if ((edge->GetSource().lock())->GetValue() == oldData) {
                 edge->SetSource(nodes_[newData]);
+
+
             } else if ((edge->GetDest().lock())->GetValue() == oldData) {
                 edge->SetDest(nodes_[newData]);
+
             }
         }
     }
 
-    // Now that there aren't any hanging pointers, we can safely delete the old node
     DeleteNode(oldData);
 
     return true;
+
 }
 
 template <typename N, typename E>
@@ -131,13 +131,10 @@ void gdwg::Graph<N, E>::MergeReplace(const N& oldData, const N& newData) {
         throw std::runtime_error("Cannot call Graph::MergeReplace on old or new data if they don't exist in the graph");
     }
 
-    // Copy over old edge data
     nodes_[newData]->AddEdges(nodes_[oldData]->GetEdges());
 
     for (const auto& node : nodes_) {
         for (const auto& edge : node.second->GetEdges()) {
-
-            // Add any of the outgoing edges of the old node to the new node, but with updated values
             if ((edge->GetSource().lock())->GetValue() == oldData) {
                 InsertEdge(newData, (edge->GetDest().lock())->GetValue(), edge->GetValue());
                 nodes_[newData]->GetEdges().erase(edge);
@@ -147,13 +144,12 @@ void gdwg::Graph<N, E>::MergeReplace(const N& oldData, const N& newData) {
             }
         }
     }
-
-    // Now that there aren't any hanging pointers, we can safely delete the old node
     DeleteNode(oldData);
+
 }
 
 template <typename N, typename E>
-void gdwg::Graph<N, E>::Clear() {
+void gdwg::Graph<N, E>::Clear() noexcept {
     for (const auto& node : nodes_) {
         DeleteNode(node.second->GetValue());
     }
@@ -168,7 +164,7 @@ bool gdwg::Graph<N, E>::IsNode(const N& val) const noexcept {
 }
 
 template <typename N, typename E>
-bool gdwg::Graph<N, E>::IsConnected(const N& src, const N& dst) const {
+bool gdwg::Graph<N, E>::IsConnected(const N& src, const N& dst) {
 
     if (!IsNode(src) || !IsNode(dst)) {
         throw std::runtime_error("Cannot call Graph::IsConnected if src or dst node don't exist in the graph");
@@ -223,13 +219,17 @@ std::vector<E> gdwg::Graph<N, E>::GetWeights(const N& src, const N& dst) const {
         }
     }
     return weights;
+
 }
 
+
+
 template <typename N, typename E>
-typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::find(const N& src, const N& dst, const E& w) const noexcept {
+typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::find(const N& src, const N& dst, const E& w) noexcept {
     return std::find_if(begin(), end(), [&src, &dst, &w] (const std::tuple<N, N, E> curr) {
       return (std::get<0>(curr) == src && std::get<1>(curr) == dst && std::get<2>(curr) == w);
     });
+
 }
 
 template <typename N, typename E>
@@ -243,6 +243,8 @@ bool gdwg::Graph<N, E>::erase(const N& src, const N& dst, const E& w) noexcept {
                 nodes_[src]->GetEdges().erase(edge);
                 return true;
             }
+
+
         }
     }
     return false;
@@ -319,18 +321,18 @@ typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::o
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cbegin() {
-    // If node doesn't exist, return end()
-    for (const auto& node : nodes_) {
-        if (!node.second->GetEdges().empty()) {
-            return {nodes_.begin(), nodes_.end(), std::prev(nodes_.end()), nodes_.begin()->second->GetEdges().begin()};
-        }
-    }
-    return end();
+    return {nodes_.begin(),
+            nodes_.end(),
+            std::prev(nodes_.end()),
+            nodes_.begin()->second->GetEdges().begin()};
 }
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cend() {
-    return {nodes_.end(), nodes_.end(), std::prev(nodes_.end()), nodes_.begin()->second->GetEdges().end()};
+    return {nodes_.end(),
+            nodes_.end(),
+            std::prev(nodes_.end()),
+            nodes_.begin()->second->GetEdges().end()};
 }
 
 
