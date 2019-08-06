@@ -195,24 +195,44 @@ class Graph {
   const_reverse_iterator rbegin();
   const_reverse_iterator rend();
 
-
-  void PrintGraph() {
-      std::cout << "printing graph...\n";
-
-
-      for (const auto& node : nodes_) {
-          //set of shared pointers
-          for (const auto& ptr_set : node.second->GetEdges()) {
-              //for (const auto &ptr_set : ptr_map.second) {
-              std::cout << ptr_set->GetSource().lock()->GetValue() << " - " << ptr_set->GetValue()
-                        << " - "
-                        << ptr_set->GetDest().lock()->GetValue() << "\n";
-              //}
-
+  friend bool operator==(const gdwg::Graph<N, E>& a, const gdwg::Graph<N, E>& b) noexcept {
+      //test number of nodes
+      if (!a.nodes_.size() == b.nodes_.size()) {
+          return false;
+      }
+      //test if same nodes
+      for (const auto& node : a.nodes_) {
+          if (!b.nodes_.count(node.first)) {
+              return false;
           }
       }
-
+      //compare with << print
+      std::stringstream streamA;
+      streamA << a;
+      std::stringstream streamB;
+      streamB << b;
+      if(streamA.str() == streamB.str()){
+          return true;
+      } else {
+          return false;
+      }
   }
+
+  friend bool operator!=(const gdwg::Graph<N, E>& a, const gdwg::Graph<N, E>& b) noexcept {
+      return !(a == b);
+  }
+
+  friend std::ostream& operator<<(std::ostream& os, const gdwg::Graph<N, E>& g) noexcept {
+      for (const auto& node : g.nodes_) {
+          os << node.first << " (" << "\n";
+          for (const auto& ptr_set : node.second->GetEdges()) {
+              os << "  " << ptr_set->GetDest().lock()->GetValue() << " | " << ptr_set->GetValue() << "\n";
+          }
+          os << ")\n";
+      }
+      return os;
+  }
+
 
  private:
     // Map of nodes. To access shared pointer: node_[val]
