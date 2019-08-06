@@ -15,12 +15,12 @@ gdwg::Graph<N,E>::Graph (typename std::vector<N>::const_iterator begin, typename
 template <typename N, typename E>
 gdwg::Graph<N, E>::Graph (typename std::vector<std::tuple<N, N, E>>::const_iterator tup_begin, typename std::vector<std::tuple<N, N, E>>::const_iterator tup_end) noexcept {
 
-    for (auto it = tup_begin; it != tup_end; ++it) {
-        std::tuple<N, N, E> tup = *it;
-        InsertNode(std::get<0>(tup));
-        InsertNode(std::get<1>(tup));
-        InsertEdge(std::get<0>(tup), std::get<1>(tup), std::get<2>(tup));
-    }
+for (auto it = tup_begin; it != tup_end; ++it) {
+std::tuple<N, N, E> tup = *it;
+InsertNode(std::get<0>(tup));
+InsertNode(std::get<1>(tup));
+InsertEdge(std::get<0>(tup), std::get<1>(tup), std::get<2>(tup));
+}
 }
 
 template <typename N, typename E>
@@ -157,9 +157,9 @@ void gdwg::Graph<N, E>::MergeReplace(const N& oldData, const N& newData) {
                 //Erase old edge
                 nodes_[(edge->GetSource().lock())->GetValue()]->GetEdges().erase(edge);
             }
-          
+
         }
-        
+
     }
     DeleteNode(oldData);
 
@@ -236,7 +236,9 @@ template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::find(const N& src, const N& dst, const E& w) noexcept {
 
 
- return std::find_if(this->begin(), this->end(), [&src, &dst, &w] (std::tuple<const N&, const N&, const E&> curr) { return (src == std::get<0>(curr) && dst == std::get<1>(curr) && w == std::get<2>(curr)); });
+    return std::find_if(begin(), end(), [&src, &dst, &w] (const std::tuple<N, N, E> curr) {
+      return (std::get<0>(curr) == src && std::get<1>(curr) == dst && std::get<2>(curr) == w);
+    });
 
 }
 
@@ -302,12 +304,12 @@ typename gdwg::Graph<N, E>::const_iterator& gdwg::Graph<N, E>::const_iterator::o
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cbegin() {
-    return const_iterator{nodes_.begin(), nodes_.end(), nodes_.begin()->second->GetEdges().begin()};
+    return {nodes_.begin(), nodes_.end(), nodes_.begin()->second->GetEdges().begin()};
 }
 
 template <typename N, typename E>
 typename gdwg::Graph<N, E>::const_iterator gdwg::Graph<N, E>::cend() {
-    return const_iterator{nodes_.end(), nodes_.end(), {}};
+    return {nodes_.end(), nodes_.end(), nodes_.begin()->second->GetEdges().end()};
 }
 
 

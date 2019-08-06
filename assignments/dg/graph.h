@@ -15,17 +15,17 @@ template<typename T>
 // requires Relation<Less<T>, T>()
 struct CompareByValue {
   bool operator()(const std::shared_ptr<T>& lhs, const std::shared_ptr<T>& rhs) const {
-    //return *lhs < *rhs;
-    /*
-    static_cast<void>(lhs);
-    static_cast<void>(rhs);
-    return true;
-    */
+      //return *lhs < *rhs;
+      /*
+      static_cast<void>(lhs);
+      static_cast<void>(rhs);
+      return true;
+      */
 
-    // First check sources of each node
-    if (lhs->GetSource().lock()->GetValue() < rhs->GetSource().lock()->GetValue()) {
-        return true;
-    }
+      // First check sources of each node
+      if (lhs->GetSource().lock()->GetValue() < rhs->GetSource().lock()->GetValue()) {
+          return true;
+      }
 
 
       if (lhs->GetSource().lock()->GetValue() <= rhs->GetSource().lock()->GetValue() && lhs->GetDest().lock()->GetValue() < rhs->GetDest().lock()->GetValue()) {
@@ -35,10 +35,10 @@ struct CompareByValue {
       if (lhs->GetSource().lock()->GetValue() <= rhs->GetSource().lock()->GetValue() && lhs->GetDest().lock()->GetValue() <= rhs->GetDest().lock()->GetValue() && lhs->GetValue() < rhs->GetValue()){
           return true;
       }
-    return false;
+      return false;
 
 
-   
+
   }
 };
 
@@ -138,12 +138,12 @@ class Graph {
     }
 
     //==
-    friend bool operator==(const_iterator& lhs, const_iterator& rhs) {
-        return ((std::get<0>(*lhs) == std::get<0>(*rhs)) && (std::get<1>(*lhs) == std::get<1>(*rhs)) && (std::get<2>(*lhs) == std::get<2>(*rhs)));
+    friend bool operator==(const const_iterator& lhs, const const_iterator& rhs) {
+        return lhs.node_it_ == rhs.node_it_ && (lhs.node_it_ == lhs.sentinel_ || lhs.edge_it_ == rhs.edge_it_);
     }
 
     //!=
-    friend bool operator!=(const_iterator& lhs, const_iterator& rhs) {
+    friend bool operator!=(const const_iterator& lhs, const const_iterator& rhs) {
         return !(lhs == rhs);
     }
 
@@ -164,42 +164,42 @@ class Graph {
 
   };
 
-    Graph() = default;
-    Graph(typename std::vector<N>::const_iterator begin, typename std::vector<N>::const_iterator end) noexcept;
+  Graph() = default;
+  Graph(typename std::vector<N>::const_iterator begin, typename std::vector<N>::const_iterator end) noexcept;
 
 
-    Graph(typename std::vector<std::tuple<N, N, E>>::const_iterator tup_begin, typename std::vector<std::tuple<N, N, E>>::const_iterator tup_end) noexcept;
-    Graph(std::initializer_list<N> list) noexcept;
+  Graph(typename std::vector<std::tuple<N, N, E>>::const_iterator tup_begin, typename std::vector<std::tuple<N, N, E>>::const_iterator tup_end) noexcept;
+  Graph(std::initializer_list<N> list) noexcept;
 
-    // move and copy constructors
-    Graph(const Graph<N, E>& g) noexcept;
-    Graph(Graph<N, E>&& g) noexcept;
+  // move and copy constructors
+  Graph(const Graph<N, E>& g) noexcept;
+  Graph(Graph<N, E>&& g) noexcept;
 
-    Graph& operator=(const Graph& g) noexcept;
-    Graph& operator=(Graph && g) noexcept;
-
-
-    bool InsertNode(const N& val) noexcept;
-    bool InsertEdge(const N& src, const N& dst, const E& w);
-    bool DeleteNode(const N&) noexcept; 
-    bool Replace(const N& oldData, const N& newData);
-    void MergeReplace(const N& oldData, const N& newData);
-
-    bool IsNode(const N& val) const noexcept ;
-    bool IsConnected(const N& src, const N& dst) const;
+  Graph& operator=(const Graph& g) noexcept;
+  Graph& operator=(Graph && g) noexcept;
 
 
-    std::vector<N> GetNodes() const noexcept;
-    std::vector<N> GetConnected(const N& src) const;
-    std::vector<E> GetWeights(const N& src, const N& dst) const;
-    const_iterator find(const N& src, const N& dst, const E& val) noexcept;
+  bool InsertNode(const N& val) noexcept;
+  bool InsertEdge(const N& src, const N& dst, const E& w);
+  bool DeleteNode(const N&) noexcept;
+  bool Replace(const N& oldData, const N& newData);
+  void MergeReplace(const N& oldData, const N& newData);
 
-    bool erase(const N& src, const N& dst, const E& w) noexcept;
+  bool IsNode(const N& val) const noexcept ;
+  bool IsConnected(const N& src, const N& dst) const;
 
-    /*
-  const_iterator cbegin() const noexcept;
-  const_iterator cend() const noexcept;
-     */
+
+  std::vector<N> GetNodes() const noexcept;
+  std::vector<N> GetConnected(const N& src) const;
+  std::vector<E> GetWeights(const N& src, const N& dst) const;
+  const_iterator find(const N& src, const N& dst, const E& val) noexcept;
+
+  bool erase(const N& src, const N& dst, const E& w) noexcept;
+
+  /*
+const_iterator cbegin() const noexcept;
+const_iterator cend() const noexcept;
+   */
 
   const_iterator cbegin();
   const_iterator cend();
@@ -207,26 +207,26 @@ class Graph {
   const_iterator end();
 
 
-    void PrintGraph() {
-        std::cout << "printing graph...\n";
+  void PrintGraph() {
+      std::cout << "printing graph...\n";
 
 
-        for (const auto& node : nodes_) {
-            //set of shared pointers
-            for (const auto& ptr_set : node.second->GetEdges()) {
-                //for (const auto &ptr_set : ptr_map.second) {
-                std::cout << ptr_set->GetSource().lock()->GetValue() << " - " << ptr_set->GetValue()
-                          << " - "
-                          << ptr_set->GetDest().lock()->GetValue() << "\n";
-                //}
+      for (const auto& node : nodes_) {
+          //set of shared pointers
+          for (const auto& ptr_set : node.second->GetEdges()) {
+              //for (const auto &ptr_set : ptr_map.second) {
+              std::cout << ptr_set->GetSource().lock()->GetValue() << " - " << ptr_set->GetValue()
+                        << " - "
+                        << ptr_set->GetDest().lock()->GetValue() << "\n";
+              //}
 
-            }
-        }
+          }
+      }
 
-    }
+  }
 
 
-    ~Graph() = default;
+  ~Graph() = default;
 
 
 
