@@ -175,7 +175,7 @@ bool gdwg::Graph<N, E>::IsConnected(const N& src, const N& dst) const {
     }
 
     if (IsNode(src)) {
-        for (const auto& edge : nodes_[src]->GetEdges()) {
+        for (const auto& edge : nodes_.at(src)->GetEdges()) {
             if ((edge->GetDest().lock())->GetValue() == dst) {
                 return true;
             }

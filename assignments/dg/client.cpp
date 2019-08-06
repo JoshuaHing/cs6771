@@ -67,10 +67,7 @@ int main() {
     }
     */
 
-    std::vector<std::string> v{"hello", "how"};
-    gdwg::Graph<std::string, double> b{v.begin(), v.end()};
-    static_cast<void>(b);
-
+    g.IsConnected("a", "b");
 
 
     //static_cast1 <void>(it);

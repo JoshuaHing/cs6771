@@ -61,7 +61,7 @@ class Graph {
     N GetValue() const { return value_; }
     std::map<N, std::shared_ptr<Node>>& GetNodes() { return nodes_; }
     void SetValue(const N& val) { value_ = val; }
-    std::set<std::shared_ptr<Edge>, CompareByValue<Edge>>& GetEdges()  { return edges_; }
+    std::set<std::shared_ptr<Edge>, CompareByValue<Edge>> GetEdges() const { return edges_; }
     void SetEdges(std::set<std::shared_ptr<Edge>, CompareByValue<Edge>> e) { edges_ = e; }
 
     // Helper methods
@@ -170,8 +170,12 @@ class Graph {
 
   // Constructors / Destructors
   Graph() = default;
-  Graph(typename std::vector<N>::const_iterator begin, typename std::vector<N>::const_iterator end) noexcept;
-  Graph(typename std::vector<std::tuple<N, N, E>>::const_iterator tup_begin, typename std::vector<std::tuple<N, N, E>>::const_iterator tup_end) noexcept;
+  Graph(
+      typename std::vector<N>::const_iterator begin,
+      typename std::vector<N>::const_iterator end) noexcept;
+  Graph(
+      typename std::vector<std::tuple<N, N, E>>::const_iterator tup_begin,
+      typename std::vector<std::tuple<N, N, E>>::const_iterator tup_end) noexcept;
   Graph(std::initializer_list<N> list) noexcept;
   Graph(const Graph<N, E>& g) noexcept;
   Graph(Graph<N, E>&& g) noexcept;
@@ -217,17 +221,17 @@ class Graph {
   friend bool operator==(
       const gdwg::Graph<N, E>& a,
       const gdwg::Graph<N, E>& b) noexcept {
-      //test number of nodes
+      // test number of nodes
       if (!a.nodes_.size() == b.nodes_.size()) {
           return false;
       }
-      //test if same nodes
+      // test if same nodes
       for (const auto& node : a.nodes_) {
           if (!b.nodes_.count(node.first)) {
               return false;
           }
       }
-      //compare with << print
+      // compare with << print
       std::stringstream streamA;
       streamA << a;
       std::stringstream streamB;
