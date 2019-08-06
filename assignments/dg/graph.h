@@ -250,3 +250,60 @@ const_iterator cend() const noexcept;
 #include "assignments/dg/graph.tpp"
 
 #endif  // ASSIGNMENTS_DG_GRAPH_H_
+
+    //--------------------------FRIEND CODE-------------------------//
+    void PrintGraph() {
+      auto nodeIt = nodes_.begin();
+      auto edgeIt = this.begin();
+      boolean hasEdge = false;
+
+      while (nodeIt != nodes_.end() && edgeIt != this.end()){
+        if(nodeIt->first == std::get<0>(*edgeIt)){
+          hasEdge = true;
+          std::cout << std::get<0>(*edgeIt) << " (" << "\n" << "  " << std::get<1>(*edgeIt) << " | " << std::get<2>(*edgeIt) << "\n" << ")" << "\n";
+          edgeIt++;
+        } else {
+          if(hasEdge == true){
+            nodeIt++;
+            hasEdge = false;
+          } else {
+            std::cout << nodeIt->first << " (" << "\n" << ")" << "\n";
+            nodeIt++;
+          }
+        }
+      }
+    }
+
+    boolean ==(Graph a, Graph b){
+      auto nodeItA = a.nodes_.begin();
+      auto edgeItA = a.begin();
+
+      auto nodeItB = b.nodes_.begin();
+      auto edgeItB = b.begin();
+
+      //first test if all nodes are the same
+      while (nodeItA != a.nodes_.end() && nodeItB != b.nodes_.end()) {
+        if (nodeItA->first != nodeItB->first) return false;
+        nodeItA++;
+        nodeItB++;
+      }
+      //now they should have both ended at the same time
+      if (!(nodeItA == a.nodes_.end() && nodeItB == b.nodes_.end())) return false;
+
+      //now test if all edges are the same
+      while (edgeItA != A.end() && edgeItB != b.end()) {
+        if (std::get<0>(*edgeItA) != std::get<0>(*edgeItB)) return false;
+        if (std::get<1>(*edgeItA) != std::get<1>(*edgeItB)) return false;
+        if (std::get<2>(*edgeItA) != std::get<2>(*edgeItB)) return false;
+        edgeItA++;
+        edgeItB++;
+      }
+      //now they should have both ended at the same time
+      if (!(edgeItA == a.end() && edgeItB == b.end())) return false;
+
+      return true;
+    }
+
+    boolean !=(Graph a, Graph b){
+      return !(a == b);
+    }
