@@ -12,6 +12,7 @@ int main() {
   g.InsertNode("c");
   g.InsertNode("d");
 
+
     g.InsertEdge("a", "b", 5);
     g.InsertEdge("a", "b", 6);
     g.InsertEdge("a", "b", 4);
@@ -25,6 +26,13 @@ int main() {
 
   g.InsertEdge("c", "d", 3);
 
+
+  /*
+  auto it = g.erase(g.begin());
+    std::cout << "value = " << std::get<0>(*it) << "\n";
+    std::cout << "value = " << std::get<1>(*it) << "\n";
+    std::cout << "value = " << std::get<2>(*it) << "\n";
+    */
   //g.Replace("a", "e");
   //g.MergeReplace("a", "b");
 
@@ -40,9 +48,14 @@ int main() {
    */
 
 
+    /*
+    auto it = g.end();
+    --it;
+    std::cout << "value = " << std::get<0>(*it) << "\n";
+    std::cout << "value = " << std::get<1>(*it) << "\n";
+    std::cout << "value = " << std::get<2>(*it) << "\n";
+     */
 
-    //auto it = g.end();
-    //static_cast<void>(it);
 
   /*
     for (int i = 0; i < 8; ++i) {
@@ -55,25 +68,13 @@ int main() {
     */
 
 
-
-
-  /*
-
-    for (auto it = g.crbegin(); it != g.crend(); it++) {
+    for (auto it = g.crbegin(); it != g.crend(); ++it) {
         std::cout << "value = " << std::get<0>(*it) << "\n";
         std::cout << "value = " << std::get<1>(*it) << "\n";
         std::cout << "value = " << std::get<2>(*it) << "\n";
+        std::cout << "\n";
     }
-    */
 
-
-    /*
-    auto it = g.end();
-    --it;
-    std::cout << "value = " << std::get<0>(*it) << "\n";
-    std::cout << "value = " << std::get<1>(*it) << "\n";
-    std::cout << "value = " << std::get<2>(*it) << "\n";
-     */
 
 
 
