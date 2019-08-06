@@ -6,30 +6,46 @@
 */
 /*
  * Every function in this assignment is tested to ensure full coverage.
- * (The only exception to this is the destructor, which should not be called manually.)
- * To ensure that each function is tested thoroughly, both regular cases
- * and edge cases were tested for those where it was deemed necessary.
+ * (The only exception to this is the destructor,
+ * which should not be called manually.)
+ * To ensure that each function is tested
+ * thoroughly, both regular cases
+ * and edge cases were tested for those
+ * where it was deemed necessary.
  *
- * The tests were not designed to be overly complicated (in the trek sense
- * e.g. by using complicated floats like 3.523523454). This is to avoid any incorrect
- * tests. Additionally, when the testing of function A depended on function B,
- * I avoided testing function B with only function A. This will eliminate any
- * cyclic errors that could be undetected. Also, I made sure to check for the number
- * of nodes, their names and the number of connections they had before checking specific connections.
- * This is to make sure there aren't any random nodes or connections that shouldn't be there.
+ * The tests were not designed to be overly
+ * complicated (in the trek sense
+ * e.g. by using complicated floats like 3.523523454).
+ * This is to avoid any incorrect
+ * tests. Additionally, when the testing of function
+ * A depended on function B,
+ * I avoided testing function B with only function A.
+ * This will eliminate any
+ * cyclic errors that could be undetected. Also, I made
+ * sure to check for the number
+ * of nodes, their names and the number of connections
+ * they had before checking specific connections.
+ * This is to make sure there aren't any random nodes or
+ * connections that shouldn't be there.
  *
- * Note how no private members or unscoped (hidden in the implementation) functions
- * were accessed in these tests. This ensures our tests are not brittle if the
- * underlying implementations change so long as the provided functions do as intended.
+ * Note how no private members or unscoped
+ * (hidden in the implementation) functions
+ * were accessed in these tests. This ensures
+ * our tests are not brittle if the
+ * underlying implementations change so long
+ * as the provided functions do as intended.
  *
- * Furthermore, tests are nesting withing clear SCENARIO -> WHEN -> THEN structures
- * which are designed to test one thing at a time. It will thus become clear what went
+ * Furthermore, tests are nesting withing clear
+ * SCENARIO -> WHEN -> THEN structures
+ * which are designed to test one thing at a time.
+ * It will thus become clear what went
  * wrong if a test has failed.
  *
-*/
+ */
 #include <sstream>
 #include <string>
 #include <tuple>
+#include <utility>
 
 #include "assignments/dg/graph.h"
 #include "catch.h"
@@ -44,17 +60,15 @@
 SCENARIO("Default Constructor") {
   WHEN("Creating graph with Default Constructor") {
     gdwg::Graph<int, int> g;
-    THEN("Nothing should be there") {
-      REQUIRE(g.GetNodes().size() == 0);
-    }
+    THEN("Nothing should be there") { REQUIRE(g.GetNodes().size() == 0); }
   }
 }
 
-//Node Iterator Constructor
+// Node Iterator Constructor
 SCENARIO("Node Iterator Constructor") {
   WHEN("Creating graph with Node Iterator Constructor N2") {
     std::vector<std::string> v{"Hello", "there"};
-    gdwg::Graph<std::string, double> g{v.begin(),v.end()};
+    gdwg::Graph<std::string, double> g{v.begin(), v.end()};
     THEN("2 nodes should be there") {
       REQUIRE(g.GetNodes().size() == 2);
       REQUIRE(g.IsNode("Hello") == true);
@@ -64,13 +78,10 @@ SCENARIO("Node Iterator Constructor") {
   }
   WHEN("Creating graph with Node Iterator Constructor N0") {
     std::vector<std::string> v{};
-    gdwg::Graph<std::string, double> g{v.begin(),v.end()};
-    THEN("Nothing should be there") {
-      REQUIRE(g.GetNodes().size() == 0);
-    }
+    gdwg::Graph<std::string, double> g{v.begin(), v.end()};
+    THEN("Nothing should be there") { REQUIRE(g.GetNodes().size() == 0); }
   }
 }
-
 
 // Node-Node-Weight Iterator Constructor
 SCENARIO("Node-Node-Weight Iterator Constructor") {
@@ -83,33 +94,29 @@ SCENARIO("Node-Node-Weight Iterator Constructor") {
     auto e = std::vector<std::tuple<std::string, std::string, double>>{e1, e2};
     gdwg::Graph<std::string, double> g{e.begin(), e.end()};
     THEN("4 nodes exist with 2 edges") {
-      //Test nodes
+      // Test nodes
       REQUIRE(g.GetNodes().size() == 3);
       REQUIRE(g.IsNode("Hello") == true);
       REQUIRE(g.IsNode("how") == true);
       REQUIRE(g.IsNode("are") == true);
-      //Test edges
+      // Test edges
       REQUIRE(g.GetConnected("Hello").size() == 1);
       REQUIRE(g.GetConnected("how").size() == 1);
       REQUIRE(g.GetConnected("are").size() == 0);
-      REQUIRE(g.GetWeights("Hello","how").size() == 1);
-      REQUIRE(g.GetWeights("Hello","how")[0] == 5.4);
-      REQUIRE(g.GetWeights("how","are").size() == 1);
-      REQUIRE(g.GetWeights("how","are")[0] == 7.6);
-
-
+      REQUIRE(g.GetWeights("Hello", "how").size() == 1);
+      REQUIRE(g.GetWeights("Hello", "how")[0] == 5.4);
+      REQUIRE(g.GetWeights("how", "are").size() == 1);
+      REQUIRE(g.GetWeights("how", "are")[0] == 7.6);
     }
   }
   WHEN("Creating graph with Node-Node-Weight Iterator Constructor N0 E0") {
     auto e = std::vector<std::tuple<std::string, std::string, double>>{};
     gdwg::Graph<std::string, double> g{e.begin(), e.end()};
-    THEN("Nothing should be there") {
-      REQUIRE(g.GetNodes().size() == 0);
-    }
+    THEN("Nothing should be there") { REQUIRE(g.GetNodes().size() == 0); }
   }
 }
 
-//List of Nodes Constructor
+// List of Nodes Constructor
 SCENARIO("List of Nodes Constructor") {
   WHEN("Creating graph with List of Nodes Constructor N4") {
     gdwg::Graph<char, std::string> g{'a', 'b', 'x', 'y'};
@@ -127,15 +134,11 @@ SCENARIO("List of Nodes Constructor") {
   }
   WHEN("Creating graph with List of Nodes Constructor N0") {
     gdwg::Graph<char, std::string> g{};
-    THEN("Nothing should be there") {
-      REQUIRE(g.GetNodes().size() == 0);
-    }
+    THEN("Nothing should be there") { REQUIRE(g.GetNodes().size() == 0); }
   }
 }
 
-
-
-//Copy Constructor
+// Copy Constructor
 SCENARIO("Copy Constructor") {
   WHEN("Creating graph with Copy Constructor N0") {
     gdwg::Graph<std::string, int> g;
@@ -155,38 +158,38 @@ SCENARIO("Copy Constructor") {
     gdwg::Graph<std::string, double> g{e.begin(), e.end()};
     gdwg::Graph<std::string, double> gCopy{g};
     THEN("gCopy should be same as original") {
-      //Test nodes
+      // Test nodes
       REQUIRE(g.GetNodes().size() == 3);
       REQUIRE(g.IsNode("Hello") == true);
       REQUIRE(g.IsNode("how") == true);
       REQUIRE(g.IsNode("are") == true);
-      //Test edges
+      // Test edges
       REQUIRE(g.GetConnected("Hello").size() == 1);
       REQUIRE(g.GetConnected("how").size() == 1);
       REQUIRE(g.GetConnected("are").size() == 0);
-      REQUIRE(g.GetWeights("Hello","how").size() == 1);
-      REQUIRE(g.GetWeights("Hello","how")[0] == 5.4);
-      REQUIRE(g.GetWeights("how","are").size() == 1);
-      REQUIRE(g.GetWeights("how","are")[0] == 7.6);
+      REQUIRE(g.GetWeights("Hello", "how").size() == 1);
+      REQUIRE(g.GetWeights("Hello", "how")[0] == 5.4);
+      REQUIRE(g.GetWeights("how", "are").size() == 1);
+      REQUIRE(g.GetWeights("how", "are")[0] == 7.6);
 
-      //Test nodes
+      // Test nodes
       REQUIRE(gCopy.GetNodes().size() == 3);
       REQUIRE(gCopy.IsNode("Hello") == true);
       REQUIRE(gCopy.IsNode("how") == true);
       REQUIRE(gCopy.IsNode("are") == true);
-      //Test edges
+      // Test edges
       REQUIRE(gCopy.GetConnected("Hello").size() == 1);
       REQUIRE(gCopy.GetConnected("how").size() == 1);
       REQUIRE(gCopy.GetConnected("are").size() == 0);
-      REQUIRE(gCopy.GetWeights("Hello","how").size() == 1);
-      REQUIRE(gCopy.GetWeights("Hello","how")[0] == 5.4);
-      REQUIRE(gCopy.GetWeights("how","are").size() == 1);
-      REQUIRE(gCopy.GetWeights("how","are")[0] == 7.6);
+      REQUIRE(gCopy.GetWeights("Hello", "how").size() == 1);
+      REQUIRE(gCopy.GetWeights("Hello", "how")[0] == 5.4);
+      REQUIRE(gCopy.GetWeights("how", "are").size() == 1);
+      REQUIRE(gCopy.GetWeights("how", "are")[0] == 7.6);
     }
   }
 }
 
-//Move Constructor
+// Move Constructor
 SCENARIO("Move Constructor") {
   WHEN("Creating graph with Move Constructor N0") {
     gdwg::Graph<std::string, int> g;
@@ -208,19 +211,19 @@ SCENARIO("Move Constructor") {
     THEN("gMove should be same as original, g should be nothing") {
       REQUIRE(g.GetNodes().size() == 0);
 
-      //Test nodes
+      // Test nodes
       REQUIRE(gMove.GetNodes().size() == 3);
       REQUIRE(gMove.IsNode("Hello") == true);
       REQUIRE(gMove.IsNode("how") == true);
       REQUIRE(gMove.IsNode("are") == true);
-      //Test edges
+      // Test edges
       REQUIRE(gMove.GetConnected("Hello").size() == 1);
       REQUIRE(gMove.GetConnected("how").size() == 1);
       REQUIRE(gMove.GetConnected("are").size() == 0);
-      REQUIRE(gMove.GetWeights("Hello","how").size() == 1);
-      REQUIRE(gMove.GetWeights("Hello","how")[0] == 5.4);
-      REQUIRE(gMove.GetWeights("how","are").size() == 1);
-      REQUIRE(gMove.GetWeights("how","are")[0] == 7.6);
+      REQUIRE(gMove.GetWeights("Hello", "how").size() == 1);
+      REQUIRE(gMove.GetWeights("Hello", "how")[0] == 5.4);
+      REQUIRE(gMove.GetWeights("how", "are").size() == 1);
+      REQUIRE(gMove.GetWeights("how", "are")[0] == 7.6);
     }
   }
 }
@@ -231,7 +234,7 @@ SCENARIO("Move Constructor") {
   **************************************************************************************************
 */
 
-//Copy Assignment
+// Copy Assignment
 SCENARIO("Copy Assignment") {
   WHEN("Using Copy Assignment N0") {
     const gdwg::Graph<std::string, int> g;
@@ -253,38 +256,38 @@ SCENARIO("Copy Assignment") {
     gdwg::Graph<std::string, double> g2;
     g2 = g;
     THEN("g2 should be same as original") {
-      //Test nodes
+      // Test nodes
       REQUIRE(g.GetNodes().size() == 3);
       REQUIRE(g.IsNode("Hello") == true);
       REQUIRE(g.IsNode("how") == true);
       REQUIRE(g.IsNode("are") == true);
-      //Test edges
+      // Test edges
       REQUIRE(g.GetConnected("Hello").size() == 1);
       REQUIRE(g.GetConnected("how").size() == 1);
       REQUIRE(g.GetConnected("are").size() == 0);
-      REQUIRE(g.GetWeights("Hello","how").size() == 1);
-      REQUIRE(g.GetWeights("Hello","how")[0] == 5.4);
-      REQUIRE(g.GetWeights("how","are").size() == 1);
-      REQUIRE(g.GetWeights("how","are")[0] == 7.6);
+      REQUIRE(g.GetWeights("Hello", "how").size() == 1);
+      REQUIRE(g.GetWeights("Hello", "how")[0] == 5.4);
+      REQUIRE(g.GetWeights("how", "are").size() == 1);
+      REQUIRE(g.GetWeights("how", "are")[0] == 7.6);
 
-      //Test nodes
+      // Test nodes
       REQUIRE(g2.GetNodes().size() == 3);
       REQUIRE(g2.IsNode("Hello") == true);
       REQUIRE(g2.IsNode("how") == true);
       REQUIRE(g2.IsNode("are") == true);
-      //Test edges
+      // Test edges
       REQUIRE(g2.GetConnected("Hello").size() == 1);
       REQUIRE(g2.GetConnected("how").size() == 1);
       REQUIRE(g2.GetConnected("are").size() == 0);
-      REQUIRE(g2.GetWeights("Hello","how").size() == 1);
-      REQUIRE(g2.GetWeights("Hello","how")[0] == 5.4);
-      REQUIRE(g2.GetWeights("how","are").size() == 1);
-      REQUIRE(g2.GetWeights("how","are")[0] == 7.6);
+      REQUIRE(g2.GetWeights("Hello", "how").size() == 1);
+      REQUIRE(g2.GetWeights("Hello", "how")[0] == 5.4);
+      REQUIRE(g2.GetWeights("how", "are").size() == 1);
+      REQUIRE(g2.GetWeights("how", "are")[0] == 7.6);
     }
   }
 }
 
-//Move Assignment
+// Move Assignment
 SCENARIO("Move Assignment") {
   WHEN("Using Move Assignment N0") {
     gdwg::Graph<std::string, int> g;
@@ -306,22 +309,22 @@ SCENARIO("Move Assignment") {
     gdwg::Graph<std::string, double> g2;
     g2 = std::move(g);
     THEN("g2 should be same as original, g should be nothing") {
-      //Test nodes
+      // Test nodes
       REQUIRE(g.GetNodes().size() == 0);
 
-      //Test nodes
+      // Test nodes
       REQUIRE(g2.GetNodes().size() == 3);
       REQUIRE(g2.IsNode("Hello") == true);
       REQUIRE(g2.IsNode("how") == true);
       REQUIRE(g2.IsNode("are") == true);
-      //Test edges
+      // Test edges
       REQUIRE(g2.GetConnected("Hello").size() == 1);
       REQUIRE(g2.GetConnected("how").size() == 1);
       REQUIRE(g2.GetConnected("are").size() == 0);
-      REQUIRE(g2.GetWeights("Hello","how").size() == 1);
-      REQUIRE(g2.GetWeights("Hello","how")[0] == 5.4);
-      REQUIRE(g2.GetWeights("how","are").size() == 1);
-      REQUIRE(g2.GetWeights("how","are")[0] == 7.6);
+      REQUIRE(g2.GetWeights("Hello", "how").size() == 1);
+      REQUIRE(g2.GetWeights("Hello", "how")[0] == 5.4);
+      REQUIRE(g2.GetWeights("how", "are").size() == 1);
+      REQUIRE(g2.GetWeights("how", "are")[0] == 7.6);
     }
   }
 }
@@ -332,7 +335,7 @@ SCENARIO("Move Assignment") {
   **************************************************************************************************
 */
 
-//InsertNode Method
+// InsertNode Method
 SCENARIO("InsertNode Method") {
   WHEN("Inserting 2 Nodes into empty graph") {
     gdwg::Graph<std::string, int> g;
@@ -351,29 +354,33 @@ SCENARIO("InsertNode Method") {
   }
 }
 
-//InsertEdge Method
+// InsertEdge Method
 SCENARIO("InsertEdge Method") {
   WHEN("Inserting 2 Edges into empty graph") {
     gdwg::Graph<std::string, int> g{"a", "b"};
     REQUIRE(g.InsertEdge("a", "b", 3) == true);
     REQUIRE(g.InsertEdge("a", "b", 3) == false);
     REQUIRE(g.InsertEdge("a", "b", 4) == true);
-    REQUIRE_THROWS_WITH(g.InsertEdge("a", "c", 4), "Cannot call Graph::InsertEdge when either src or dst node does not exist");
-    REQUIRE_THROWS_WITH(g.InsertEdge("c", "a", 4), "Cannot call Graph::InsertEdge when either src or dst node does not exist");
+    REQUIRE_THROWS_WITH(g.InsertEdge("a", "c", 4),
+                        "Cannot call Graph::InsertEdge when either src or dst "
+                        "node does not exist");
+    REQUIRE_THROWS_WITH(g.InsertEdge("c", "a", 4),
+                        "Cannot call Graph::InsertEdge when either src or dst "
+                        "node does not exist");
     THEN("2 Edges there") {
       REQUIRE(g.GetNodes().size() == 2);
       REQUIRE(g.IsNode("a") == true);
       REQUIRE(g.IsNode("b") == true);
       REQUIRE(g.GetConnected("a").size() == 1);
       REQUIRE(g.GetConnected("b").size() == 0);
-      REQUIRE(g.GetWeights("a","b").size() == 2);
-      REQUIRE(g.GetWeights("a","b")[0] == 3);
-      REQUIRE(g.GetWeights("a","b")[1] == 4);
+      REQUIRE(g.GetWeights("a", "b").size() == 2);
+      REQUIRE(g.GetWeights("a", "b")[0] == 3);
+      REQUIRE(g.GetWeights("a", "b")[1] == 4);
     }
   }
 }
 
-//DeleteNode Method
+// DeleteNode Method
 SCENARIO("DeleteNode Method") {
   WHEN("Deleting a node") {
     gdwg::Graph<std::string, int> g{"a", "b"};
@@ -383,15 +390,11 @@ SCENARIO("DeleteNode Method") {
 
     REQUIRE(g.DeleteNode("b") == true);
     REQUIRE(g.DeleteNode("c") == false);
-    THEN("1 node left") {
-      //REQUIRE(g.GetNodes().size() == 1);
-      //REQUIRE(g.IsNode("a") == true);
-      //REQUIRE(g.GetConnected("a").size() == 0);
-    }
+    THEN("1 node left") {}
   }
 }
 
-//Replace Method
+// Replace Method
 SCENARIO("Replace Method") {
   WHEN("Replacing a node") {
     gdwg::Graph<std::string, int> g{"a", "b"};
@@ -401,7 +404,9 @@ SCENARIO("Replace Method") {
 
     REQUIRE(g.Replace("a", "b") == false);
     REQUIRE(g.Replace("a", "c") == true);
-    REQUIRE_THROWS_WITH(g.Replace("a", "d"), "Cannot call Graph::Replace on a node that doesn't exist");
+    REQUIRE_THROWS_WITH(
+        g.Replace("a", "d"),
+        "Cannot call Graph::Replace on a node that doesn't exist");
     THEN("c node left") {
       REQUIRE(g.GetNodes().size() == 2);
       REQUIRE(g.IsNode("c") == true);
@@ -409,13 +414,13 @@ SCENARIO("Replace Method") {
       REQUIRE(g.IsNode("a") == false);
       REQUIRE(g.GetConnected("c").size() == 1);
       REQUIRE(g.GetConnected("b").size() == 1);
-      REQUIRE(g.GetWeights("c","b")[0] == 3);
-      REQUIRE(g.GetWeights("b","c")[0] == 4);
+      REQUIRE(g.GetWeights("c", "b")[0] == 3);
+      REQUIRE(g.GetWeights("b", "c")[0] == 4);
     }
   }
 }
 
-//MergeReplace Method
+// MergeReplace Method
 SCENARIO("MergeReplace Method") {
   WHEN("MergeReplacing a node e.g.1") {
     gdwg::Graph<std::string, int> g{"a", "b", "c", "d"};
@@ -423,8 +428,12 @@ SCENARIO("MergeReplace Method") {
     REQUIRE(g.InsertEdge("a", "c", 2) == true);
     REQUIRE(g.InsertEdge("a", "d", 3) == true);
 
-    REQUIRE_THROWS_WITH(g.MergeReplace("a", "e"), "Cannot call Graph::MergeReplace on old or new data if they don't exist in the graph");
-    REQUIRE_THROWS_WITH(g.MergeReplace("e", "a"), "Cannot call Graph::MergeReplace on old or new data if they don't exist in the graph");
+    REQUIRE_THROWS_WITH(g.MergeReplace("a", "e"),
+                        "Cannot call Graph::MergeReplace on old or new data "
+                        "if they don't exist in the graph");
+    REQUIRE_THROWS_WITH(g.MergeReplace("e", "a"),
+                        "Cannot call Graph::MergeReplace on old or new data "
+                        "if they don't exist in the graph");
     g.MergeReplace("a", "b");
 
     THEN("checking graph after") {
@@ -435,9 +444,9 @@ SCENARIO("MergeReplace Method") {
       REQUIRE(g.GetConnected("b").size() == 3);
       REQUIRE(g.GetConnected("c").size() == 0);
       REQUIRE(g.GetConnected("d").size() == 0);
-      REQUIRE(g.GetWeights("b","b")[0] == 1);
-      REQUIRE(g.GetWeights("b","c")[0] == 2);
-      REQUIRE(g.GetWeights("b","d")[0] == 3);
+      REQUIRE(g.GetWeights("b", "b")[0] == 1);
+      REQUIRE(g.GetWeights("b", "c")[0] == 2);
+      REQUIRE(g.GetWeights("b", "d")[0] == 3);
     }
   }
   WHEN("MergeReplacing a node e.g.2") {
@@ -457,9 +466,9 @@ SCENARIO("MergeReplace Method") {
       REQUIRE(g.GetConnected("b").size() == 3);
       REQUIRE(g.GetConnected("c").size() == 0);
       REQUIRE(g.GetConnected("d").size() == 0);
-      REQUIRE(g.GetWeights("b","b")[0] == 1);
-      REQUIRE(g.GetWeights("b","c")[0] == 2);
-      REQUIRE(g.GetWeights("b","d")[0] == 3);
+      REQUIRE(g.GetWeights("b", "b")[0] == 1);
+      REQUIRE(g.GetWeights("b", "c")[0] == 2);
+      REQUIRE(g.GetWeights("b", "d")[0] == 3);
     }
   }
   WHEN("MergeReplacing a node e.g.3.1") {
@@ -478,9 +487,9 @@ SCENARIO("MergeReplace Method") {
       REQUIRE(g.GetConnected("a").size() == 1);
       REQUIRE(g.GetConnected("c").size() == 1);
       REQUIRE(g.GetConnected("d").size() == 1);
-      REQUIRE(g.GetWeights("a","a")[0] == 3);
-      REQUIRE(g.GetWeights("c","a")[0] == 2);
-      REQUIRE(g.GetWeights("d","a")[0] == 4);
+      REQUIRE(g.GetWeights("a", "a")[0] == 3);
+      REQUIRE(g.GetWeights("c", "a")[0] == 2);
+      REQUIRE(g.GetWeights("d", "a")[0] == 4);
     }
   }
   WHEN("MergeReplacing a node e.g.3.2") {
@@ -499,14 +508,14 @@ SCENARIO("MergeReplace Method") {
       REQUIRE(g.GetConnected("a").size() == 3);
       REQUIRE(g.GetConnected("c").size() == 0);
       REQUIRE(g.GetConnected("d").size() == 0);
-      REQUIRE(g.GetWeights("a","a")[0] == 3);
-      REQUIRE(g.GetWeights("a","c")[0] == 2);
-      REQUIRE(g.GetWeights("a","d")[0] == 4);
+      REQUIRE(g.GetWeights("a", "a")[0] == 3);
+      REQUIRE(g.GetWeights("a", "c")[0] == 2);
+      REQUIRE(g.GetWeights("a", "d")[0] == 4);
     }
   }
 }
 
-//Clear Method
+// Clear Method
 SCENARIO("Clear Method") {
   WHEN("Clearing Graph first, then adding a node after") {
     gdwg::Graph<std::string, int> g{"a", "b"};
@@ -524,13 +533,11 @@ SCENARIO("Clear Method") {
   WHEN("Clearing nothing") {
     gdwg::Graph<std::string, int> g;
     g.Clear();
-    THEN("check nothing still") {
-      REQUIRE(g.GetNodes().size() == 0);
-    }
+    THEN("check nothing still") { REQUIRE(g.GetNodes().size() == 0); }
   }
 }
 
-//IsNode Method
+// IsNode Method
 SCENARIO("IsNode Method") {
   WHEN("Checking for node") {
     gdwg::Graph<std::string, int> g{"a", "b"};
@@ -546,7 +553,7 @@ SCENARIO("IsNode Method") {
   }
 }
 
-//IsConnected Method
+// IsConnected Method
 SCENARIO("IsConnected Method") {
   WHEN("Checking for connectedness") {
     gdwg::Graph<std::string, int> g{"a", "b", "c"};
@@ -560,14 +567,20 @@ SCENARIO("IsConnected Method") {
       REQUIRE(g.IsConnected("c", "b") == false);
       REQUIRE(g.IsConnected("a", "c") == false);
       REQUIRE(g.IsConnected("c", "a") == false);
-      REQUIRE_THROWS_WITH(g.MergeReplace("a", "e"),  "Cannot call Graph::MergeReplace on old or new data if they don't exist in the graph");
-      REQUIRE_THROWS_WITH(g.MergeReplace("e", "a"),  "Cannot call Graph::MergeReplace on old or new data if they don't exist in the graph");
-      REQUIRE_THROWS_WITH(g.MergeReplace("f", "g"),  "Cannot call Graph::MergeReplace on old or new data if they don't exist in the graph");
+      REQUIRE_THROWS_WITH(g.MergeReplace("a", "e"),
+                          "Cannot call Graph::MergeReplace on old or new data "
+                          "if they don't exist in the graph");
+      REQUIRE_THROWS_WITH(g.MergeReplace("e", "a"),
+                          "Cannot call Graph::MergeReplace on old or new data "
+                          "if they don't exist in the graph");
+      REQUIRE_THROWS_WITH(g.MergeReplace("f", "g"),
+                          "Cannot call Graph::MergeReplace on old or new data "
+                          "if they don't exist in the graph");
     }
   }
 }
 
-//GetNodes Method
+// GetNodes Method
 SCENARIO("GetNodes Method") {
   WHEN("Grabbing nodes from graph") {
     gdwg::Graph<std::string, int> g1{"c", "a", "b"};
@@ -589,7 +602,7 @@ SCENARIO("GetNodes Method") {
   }
 }
 
-//GetConnected Method
+// GetConnected Method
 SCENARIO("GetConnected Method") {
   WHEN("Grabbing connections from nodes") {
     gdwg::Graph<std::string, int> g{"a", "b", "c"};
@@ -606,12 +619,14 @@ SCENARIO("GetConnected Method") {
 
       REQUIRE(g.GetConnected("c").size() == 0);
 
-      REQUIRE_THROWS_WITH(g.GetConnected("d"), "Cannot call Graph::GetConnected if src doesn't exist in the graph");
+      REQUIRE_THROWS_WITH(
+          g.GetConnected("d"),
+          "Cannot call Graph::GetConnected if src doesn't exist in the graph");
     }
   }
 }
 
-//GetWeights Method
+// GetWeights Method
 SCENARIO("GetWeights Method") {
   WHEN("Grabbing weights of edges") {
     gdwg::Graph<std::string, int> g{"a", "b", "c"};
@@ -619,22 +634,26 @@ SCENARIO("GetWeights Method") {
     REQUIRE(g.InsertEdge("a", "b", 4) == true);
     REQUIRE(g.InsertEdge("a", "c", 3) == true);
     THEN("edges are returned in order") {
-      REQUIRE(g.GetWeights("a","b").size() == 2);
-      REQUIRE(g.GetWeights("a","b")[0] == 4);
-      REQUIRE(g.GetWeights("a","b")[1] == 5);
+      REQUIRE(g.GetWeights("a", "b").size() == 2);
+      REQUIRE(g.GetWeights("a", "b")[0] == 4);
+      REQUIRE(g.GetWeights("a", "b")[1] == 5);
 
-      REQUIRE(g.GetWeights("a","c").size() == 1);
-      REQUIRE(g.GetWeights("a","c")[0] == 3);
+      REQUIRE(g.GetWeights("a", "c").size() == 1);
+      REQUIRE(g.GetWeights("a", "c")[0] == 3);
 
-      REQUIRE(g.GetWeights("b","c").size() == 0);
+      REQUIRE(g.GetWeights("b", "c").size() == 0);
 
-      REQUIRE_THROWS_WITH(g.GetWeights("a","d"), "Cannot call Graph::GetWeights if src or dst node don't exist in the graph");
-      REQUIRE_THROWS_WITH(g.GetWeights("d","a"), "Cannot call Graph::GetWeights if src or dst node don't exist in the graph");
+      REQUIRE_THROWS_WITH(g.GetWeights("a", "d"),
+                          "Cannot call Graph::GetWeights if src or dst node "
+                          "don't exist in the graph");
+      REQUIRE_THROWS_WITH(g.GetWeights("d", "a"),
+                          "Cannot call Graph::GetWeights if src or dst node "
+                          "don't exist in the graph");
     }
   }
 }
 
-//Find Method
+// Find Method
 SCENARIO("Find Method") {
   WHEN("Trying to find the first edge") {
     gdwg::Graph<std::string, int> g{"a", "b", "c"};
@@ -648,8 +667,8 @@ SCENARIO("Find Method") {
     auto it = g.find(a1, a2, e);
     auto it2 = g.find(a1, a2, 99);
 
-    auto begin = std::make_tuple (a1, a2, e);
-    auto middle = std::make_tuple (a1, a3, f);
+    auto begin = std::make_tuple(a1, a2, e);
+    auto middle = std::make_tuple(a1, a3, f);
 
     THEN("it should be begin, it2 should be end") {
       REQUIRE(*(++it) == middle);
@@ -660,7 +679,7 @@ SCENARIO("Find Method") {
   }
 }
 
-//Erase Method bool
+// Erase Method bool
 SCENARIO("Erase Method bool") {
   WHEN("Erasing an edge, and trying to erase nothing") {
     gdwg::Graph<std::string, int> g{"a", "b", "c"};
@@ -671,12 +690,12 @@ SCENARIO("Erase Method bool") {
     REQUIRE(g.erase("a", "b", 0) == false);
     THEN("one edge left") {
       REQUIRE(g.GetConnected("a").size() == 1);
-      REQUIRE(g.GetWeights("a","b")[0] == 4);
+      REQUIRE(g.GetWeights("a", "b")[0] == 4);
     }
   }
 }
 
-//Erase Method iterator
+// Erase Method iterator
 SCENARIO("Erase Method iterator") {
   WHEN("Erasing an edge, and trying to erase nothing") {
     gdwg::Graph<std::string, int> g{"a", "b", "c"};
@@ -686,27 +705,24 @@ SCENARIO("Erase Method iterator") {
     std::string a2{"b"};
     int e = 5;
     auto it = g.find(a1, a2, e);
-    //auto it2 = it;
     if (it != g.end()) {
       g.erase(it);
-    //  it2 = g.erase(it);
     }
     e = 4;
-    auto begin = std::make_tuple (a1, a2, e);
+    auto begin = std::make_tuple(a1, a2, e);
 
-    //checking nothing found case
+    // checking nothing found case
     e = 6;
     REQUIRE(g.find(a1, a2, e) == g.end());
 
     THEN("one edge left, getweights should return empty vector") {
       REQUIRE(g.GetConnected("a").size() == 1);
-      REQUIRE(g.GetWeights("a","b").size() == 0);
+      REQUIRE(g.GetWeights("a", "b").size() == 0);
     }
-
   }
 }
 
-//begin and end Methods
+// begin and end Methods
 SCENARIO("begin and end Methods") {
   WHEN("Using begin and end on a two edge graph") {
     gdwg::Graph<std::string, int> g{"a", "b", "c"};
@@ -729,7 +745,7 @@ SCENARIO("begin and end Methods") {
   }
 }
 
-//rbegin and rend Methods
+// rbegin and rend Methods
 SCENARIO("rbegin and rend Methods") {
   WHEN("Using rbegin and rend on a two edge graph") {
     gdwg::Graph<std::string, int> g{"a", "b", "c"};
@@ -752,7 +768,7 @@ SCENARIO("rbegin and rend Methods") {
   }
 }
 
-//Thorough testing on iterator *,++,--,==,!=
+// Thorough testing on iterator *,++,--,==,!=
 SCENARIO("iterator *,++,--,==,!=") {
   WHEN("Setting up graph and using iterator *,++,--,==,!=") {
     gdwg::Graph<std::string, int> g{"a", "b", "c"};
@@ -769,29 +785,28 @@ SCENARIO("iterator *,++,--,==,!=") {
     REQUIRE(g.InsertEdge(a1, a3, e2) == true);
     REQUIRE(g.InsertEdge(a2, a3, e3) == true);
 
-    auto begin = std::make_tuple (a1, a2, e1);
-    auto middle = std::make_tuple (a1, a3, e2);
-    auto end = std::make_tuple (a2, a3, e3);
+    auto begin = std::make_tuple(a1, a2, e1);
+    auto middle = std::make_tuple(a1, a3, e2);
+    auto end = std::make_tuple(a2, a3, e3);
 
     THEN("interators should behave as iterators should") {
-
-      //testing pre ++
+      // testing pre ++
       auto r1 = g.begin();
       auto r2 = ++g.begin();
       auto r3 = ++(++g.begin());
       auto r4 = ++(++(++g.begin()));
 
-      //testing begin and end, ==, !=
+      // testing begin and end, ==, !=
       REQUIRE(r1 == g.begin());
       REQUIRE(r4 == g.end());
       REQUIRE(r3 != g.end());
 
-      //testing pre --
+      // testing pre --
       REQUIRE(--r4 == r3);
       REQUIRE(--r3 == r2);
       REQUIRE(--r2 == r1);
 
-      //testing post ++
+      // testing post ++
       r4++;
       r3++;
       r2++;
@@ -800,7 +815,7 @@ SCENARIO("iterator *,++,--,==,!=") {
       REQUIRE(r3 == ++(++g.begin()));
       REQUIRE(r4 == ++(++(++g.begin())));
 
-      //testing post --
+      // testing post --
 
       r4--;
       r2--;
@@ -809,7 +824,7 @@ SCENARIO("iterator *,++,--,==,!=") {
       r4++;
       r2++;
 
-      //testing *
+      // testing *
       REQUIRE(*r1 == begin);
       REQUIRE(*r2++ == middle);
       REQUIRE(*r3 == end);
@@ -819,14 +834,13 @@ SCENARIO("iterator *,++,--,==,!=") {
   }
 }
 
-
 /*
   **************************************************************************************************
                                           2.4. Friends
   **************************************************************************************************
 */
 
-//Equal Friend
+// Equal Friend
 SCENARIO("Equal Friend") {
   WHEN("Making two identical graphs") {
     gdwg::Graph<std::string, int> g;
@@ -842,14 +856,11 @@ SCENARIO("Equal Friend") {
     REQUIRE(h.InsertEdge("a", "b", 5) == true);
     REQUIRE(h.InsertEdge("b", "c", 5) == true);
 
-    THEN("they should be equal") {
-      REQUIRE(g == h);
-    }
+    THEN("they should be equal") { REQUIRE(g == h); }
   }
 }
 
-
-//Not Equal Friend
+// Not Equal Friend
 SCENARIO("Not Equal Friend") {
   WHEN("Making different graphs") {
     gdwg::Graph<std::string, int> g{"a", "b", "c"};
@@ -876,12 +887,9 @@ SCENARIO("Not Equal Friend") {
   }
 }
 
-
-
-
-//Print Friend
+// Print Friend
 SCENARIO("Print Friend") {
-  WHEN("Setting up and printing out graphs"){
+  WHEN("Setting up and printing out graphs") {
     gdwg::Graph<std::string, int> g1{"a", "b", "c"};
     REQUIRE(g1.InsertEdge("a", "b", 1) == true);
     REQUIRE(g1.InsertEdge("b", "c", 3) == true);
@@ -906,39 +914,34 @@ SCENARIO("Print Friend") {
     std::stringstream stream4;
     stream4 << g4;
 
-    THEN("They should look right"){
-      REQUIRE(stream1.str() ==  "a (\n"
-                                "  b | 1\n"
-                                ")\n"
-                                "b (\n"
-                                "  c | 2\n"
-                                "  c | 3\n"
-                                ")\n"
-                                "c (\n"
-                                ")\n"
-                                );
-      REQUIRE(stream2.str() ==  ""
-                                );
-      REQUIRE(stream3.str() ==  "a (\n"
-                                "  b | 1\n"
-                                ")\n"
-                                "b (\n"
-                                "  z | 2\n"
-                                "  z | 3\n"
-                                ")\n"
-                                "z (\n"
-                                "  b | 999\n"
-                                "  z | -1\n"
-                                ")\n"
-                                );
-      REQUIRE(stream4.str() ==  "a (\n"
-                                ")\n"
-                                "b (\n"
-                                ")\n"
-                                "c (\n"
-                                ")\n"
-                                );
+    THEN("They should look right") {
+      REQUIRE(stream1.str() == "a (\n"
+                               "  b | 1\n"
+                               ")\n"
+                               "b (\n"
+                               "  c | 2\n"
+                               "  c | 3\n"
+                               ")\n"
+                               "c (\n"
+                               ")\n");
+      REQUIRE(stream2.str() == "");
+      REQUIRE(stream3.str() == "a (\n"
+                               "  b | 1\n"
+                               ")\n"
+                               "b (\n"
+                               "  z | 2\n"
+                               "  z | 3\n"
+                               ")\n"
+                               "z (\n"
+                               "  b | 999\n"
+                               "  z | -1\n"
+                               ")\n");
+      REQUIRE(stream4.str() == "a (\n"
+                               ")\n"
+                               "b (\n"
+                               ")\n"
+                               "c (\n"
+                               ")\n");
     }
   }
-
 }
